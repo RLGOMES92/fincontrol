@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinControl | Meu Painel Financeiro Inteligente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        :root {
+            /* Tema Pastel Claro */
+            --bg-principal: #f4f6fc;
+            --bg-card: rgba(255, 255, 255, 0.85);
+            --bg-card-hover: rgba(255, 255, 255, 0.95);
+            --border-color: rgba(0, 180, 216, 0.2);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            
+            /* Cores de Destaque */
+            --neon-cyan: #0096c7;
+            --neon-pink: #d90429;
+            --neon-green: #2b9348;
+            --neon-purple: #7209b7;
+            
+            --accent-primary: linear-gradient(135deg, #4361ee, #4cc9f0);
+            --accent-success: linear-gradient(135deg, #2b9348, #55a630);
+            --accent-danger: linear-gradient(135deg, #e63946, #d90429);
+        }
+
+        body {
+            background-color: var(--bg-principal);
+            background-image: 
+                radial-gradient(at 0% 0%, #e0e7ff 0px, transparent 50%),
+                radial-gradient(at 100% 100%, #fae8ff 0px, transparent 50%);
+            background-size: 100% 100%;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1240px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* LOGO E TOPO PASTEL */
+        .main-header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 150, 199, 0.15);
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        }
+
+        .logo-text {
+            font-weight: 800;
+            font-size: 1.8rem;
+            letter-spacing: -0.5px;
+            color: #1e293b;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .logo-accent {
+            color: #ff007f;
+            text-shadow: 0 0 8px rgba(255, 0, 127, 0.2);
+        }
+
+        .icon-glow {
+            color: var(--neon-cyan);
+            filter: drop-shadow(0 2px 4px rgba(0, 150, 199, 0.3));
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            background: var(--bg-card-hover);
+            transform: translateY(-2px);
+            border-color: rgba(0, 150, 199, 0.3);
+            box-shadow: 0 12px 30px rgba(0, 150, 199, 0.1);
+        }
+
+        .card-header {
+            background: rgba(0, 0, 0, 0.01);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 18px 24px;
+        }
+
+        /* ABAS ESTILO PASTEL ATRAENTE */
+        .nav-tabs {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            gap: 6px;
+            margin-bottom: 25px;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--text-secondary);
+            border: 1px solid transparent;
+            border-radius: 12px;
+            padding: 12px 22px;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.02);
+            transition: all 0.2s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--neon-cyan);
+            background: rgba(0, 150, 199, 0.05);
+            border-color: rgba(0, 150, 199, 0.2);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #ffffff;
+            background: var(--accent-primary);
+            border-color: transparent;
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+        }
+
+        /* BOTÕES */
+        .btn {
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-primary { background: var(--accent-primary); color: #fff; box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2); }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(67, 97, 238, 0.3); }
+        .btn-success { background: var(--accent-success); color: #fff; box-shadow: 0 4px 12px rgba(43, 147, 72, 0.2); }
+        .btn-success:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(43, 147, 72, 0.3); }
+        .btn-danger { background: var(--accent-danger); color: #fff; box-shadow: 0 4px 12px rgba(230, 57, 70, 0.2); }
+        .btn-danger:hover { box-shadow: 0 6px 15px rgba(230, 57, 70, 0.3); }
+        .btn-secondary { background: rgba(0,0,0,0.05); color: var(--text-primary); border: 1px solid rgba(0,0,0,0.05); }
+        .btn-secondary:hover { background: rgba(0,0,0,0.1); color: var(--text-primary); }
+
+        /* FORMULÁRIOS */
+        .form-select, .form-control {
+            background-color: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            color: var(--text-primary);
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+        .form-select:focus, .form-control:focus {
+            background-color: #ffffff;
+            border-color: var(--neon-cyan);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 4px rgba(0, 150, 199, 0.15);
+        }
+        .form-label { color: var(--text-secondary); font-weight: 500; }
+
+        /* TABELAS */
+        .table-responsive { border-radius: 12px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff; }
+        .table { color: var(--text-primary); margin-bottom: 0; }
+        .table thead th {
+            background: rgba(0, 0, 0, 0.02);
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .table tbody td { padding: 14px 20px; vertical-align: middle; border-bottom: 1px solid rgba(0,0,0,0.04); }
+        .table-hover tbody tr:hover { background-color: rgba(0, 0, 0, 0.01); }
+
+        /* CHAT E MICROFONE */
+        .chat-box {
+            height: 400px;
+            overflow-y: auto;
+            padding: 24px;
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .balao {
+            padding: 14px 18px;
+            border-radius: 16px;
+            max-width: 75%;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .balao.ia {
+            background: #f1f5f9;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            align-self: flex-start;
+            border-top-left-radius: 4px;
+            color: var(--text-primary);
+        }
+        .balao.user {
+            background: var(--accent-primary);
+            color: #ffffff;
+            align-self: flex-end;
+            border-top-right-radius: 4px;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+        }
+        
+        /* Botão do Microfone Estilo Pastel/Vibrante */
+        .btn-mic {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        .btn-mic:hover {
+            color: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+            background: rgba(0, 150, 199, 0.05);
+        }
+        .btn-mic.gravando {
+            background: #ffe3e3 !important;
+            border-color: #ff4d4d !important;
+            color: #d90429 !important;
+            animation: pulseMicNeon 1.5s infinite;
+        }
+        @keyframes pulseMicNeon {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(217, 4, 41, 0.3); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(217, 4, 41, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(217, 4, 41, 0); }
+        }
+
+        /* RESUMOS */
+        .resumo-card {
+            background: #ffffff; border-radius: 14px; padding: 20px; border: 1px solid rgba(0,0,0,0.06); text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+        .resumo-card.border-success { border-left: 5px solid var(--neon-green); }
+        .resumo-card.border-danger { border-left: 5px solid var(--neon-pink); }
+        .resumo-card.border-primary { border-left: 5px solid var(--neon-cyan); }
+        
+        .conquista-card {
+            background: #ffffff; border: 1px solid rgba(0,0,0,0.06); border-radius: 14px; padding: 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 10px;
+        }
+        .conquista-card.bloqueada { opacity: 0.4; background: rgba(0,0,0,0.02); }
+        .conquista-icone { font-size: 1.8rem; color: #fbbf24; }
+        .font-mono { font-family: 'JetBrains Mono', monospace !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="main-header d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-cpu icon-glow fs-3"></i>
+                <h1 class="mb-0 logo-text">Fin<span class="logo-accent">Control</span></h1>
+            </div>
+            <div id="usuario-topo" class="d-flex gap-2">
+                <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="bi bi-person"></i> Entrar</button>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="bi bi-plus-lg"></i> Criar Conta</button>
+            </div>
+        </header>
+
+        <ul class="nav nav-tabs" id="painelTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="aba-1" data-bs-toggle="tab" data-bs-target="#transacoes" type="button"><i class="bi bi-cash-coin"></i> Ganhos e Gastos</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="aba-2" data-bs-toggle="tab" data-bs-target="#dividas" type="button"><i class="bi bi-credit-card-2-front"></i> Minhas Dívidas</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="aba-3" data-bs-toggle="tab" data-bs-target="#resumo" type="button"><i class="bi bi-pie-chart"></i> Resumo Geral</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="aba-4" data-bs-toggle="tab" data-bs-target="#preco-horas" type="button"><i class="bi bi-hourglass-split"></i> O Valor do Meu Tempo</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="aba-5" data-bs-toggle="tab" data-bs-target="#cofre" type="button"><i class="bi bi-safe2"></i> Cofre e Conquistas</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="aba-6" data-bs-toggle="tab" data-bs-target="#assistente" type="button"><i class="bi bi-robot"></i> Assistente Virtual</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="conteudoAbas">
+            <div class="tab-pane fade show active" id="transacoes">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">Adicionar Novo Registro</div>
+                            <div class="card-body">
+                                <form id="form-transacao">
+                                    <div class="mb-3">
+                                        <label class="form-label">Tipo</label>
+                                        <select class="form-select" id="t-tipo" required>
+                                            <option value="ganho">🟢 Ganho (Entrada)</option>
+                                            <option value="gasto">🔴 Gasto (Saída)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Valor (R$)</label>
+                                        <input type="number" class="form-control" id="t-valor" step="0.01" placeholder="0,00" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Categoria</label>
+                                        <select class="form-select" id="t-categoria" required>
+                                            <option value="Salário">Salário</option>
+                                            <option value="Alimentação">Alimentação</option>
+                                            <option value="Moradia">Moradia</option>
+                                            <option value="Lazer">Lazer</option>
+                                            <option value="Outros">Outros</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Data</label>
+                                        <input type="date" class="form-control" id="t-data" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Nome do Gasto / Descrição</label>
+                                        <input type="text" class="form-control" id="t-desc" placeholder="Ex: Mercado / Conta de Luz" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">Adicionar na Lista</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">Histórico de Entradas e Saídas</div>
+                            <div class="card-body p-3">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Tipo</th>
+                                                <th>Descrição</th>
+                                                <th>Categoria</th>
+                                                <th>Data</th>
+                                                <th>Valor</th>
+                                                <th>Ação</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tabela-transacoes"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="dividas">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">Adicionar Nova Dívida</div>
+                            <div class="card-body">
+                                <form id="form-divida">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nome da Dívida / Credor</label>
+                                        <input type="text" class="form-control" id="d-nome" placeholder="Ex: Cartão de Crédito" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Valor Total (R$)</label>
+                                        <input type="number" class="form-control" id="d-valor" step="0.01" placeholder="0,00" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Total de Parcelas</label>
+                                        <input type="number" class="form-control" id="d-parcelas" placeholder="Ex: 12" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">Salvar Dívida</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">Controle de Dívidas e Parcelas Pagas</div>
+                            <div class="card-body p-3">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Dívida</th>
+                                                <th>Valor Total</th>
+                                                <th>Progresso Parcelas</th>
+                                                <th>Valor da Parcela</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tabela-dividas"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="resumo">
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="resumo-card border-success">
+                            <h6 class="text-secondary">Total de Ganhos</h6>
+                            <h3 style="color: var(--neon-green);" id="resumo-ganhos">R$ 0,00</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="resumo-card border-danger">
+                            <h6 class="text-secondary">Total de Gastos</h6>
+                            <h3 style="color: var(--neon-pink);" id="resumo-gastos">R$ 0,00</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="resumo-card border-primary">
+                            <h6 class="text-secondary">Saldo Atual</h6>
+                            <h3 style="color: var(--neon-cyan);" id="resumo-saldo">R$ 0,00</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">Gráfico por Categoria</div>
+                    <div class="card-body d-flex justify-content-center">
+                        <div style="width: 100%; max-width: 400px;">
+                            <canvas id="meuGrafico"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-outline-danger btn-sm" onclick="limparBanco()"><i class="bi bi-trash"></i> Apagar Todos os Dados</button>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="preco-horas">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">1. Configurar o Valor da Sua Hora</div>
+                            <div class="card-body">
+                                <form id="form-valor-hora">
+                                    <div class="mb-3">
+                                        <label class="form-label">Seu Salário Mensal Líquido (R$)</label>
+                                        <input type="number" class="form-control" id="h-salario" placeholder="Ex: 4000" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Horas trabalhadas por mês</label>
+                                        <input type="number" class="form-control" id="h-horas" placeholder="Ex: 160" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">Calcular Valor da Hora</button>
+                                </form>
+                                <div id="resultado-valor-hora" class="mt-3 font-mono text-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">2. Calculadora de Impulso de Compra</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Preço do Produto (R$)</label>
+                                    <input type="number" class="form-control" id="p-preco" placeholder="Ex: 500">
+                                </div>
+                                <button class="btn btn-success w-100" onclick="calcularCustoEmHoras()">Analisar Custo em Horas</button>
+                                <div id="resultado-custo-produto" class="mt-4 text-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="cofre">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">Guardar dinheiro economizado</div>
+                            <div class="card-body">
+                                <form id="form-gasto-evitado">
+                                    <div class="mb-3">
+                                        <label class="form-label">Valor Poupado (R$)</label>
+                                        <input type="number" class="form-control" id="c-valor" step="0.01" placeholder="0,00" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Descrição da Economia</label>
+                                        <input type="text" class="form-control" id="c-desc" placeholder="Ex: Levei marmita" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-success w-100">Enviar para o Cofre</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">Progresso e Conquistas</div>
+                            <div class="card-body">
+                                <h5 class="text-center mb-4">Total Guardado: <span id="cofre-total" style="color: var(--neon-green);" class="fw-bold">R$ 0,00</span></h5>
+                                <div id="conquista-1" class="conquista-card bloqueada">
+                                    <div class="conquista-icone"><i class="bi bi-piggy-bank-fill"></i></div>
+                                    <div>
+                                        <div class="fw-bold text-dark">Primeira Economia</div>
+                                        <div class="text-secondary">Guardou o primeiro valor no cofre.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="assistente">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-robot icon-glow me-2"></i> FinBot — Inteligência de Análise</span>
+                        <span class="badge bg-success font-mono">ONLINE</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="chat-box" id="caixa-chat">
+                            <div class="balao ia">
+                                Olá! O painel foi reajustado para tons pastéis suaves para melhorar o conforto visual. 
+                                
+                                O microfone está conectado abaixo! Clique nas sugestões rápidos ou use o microfone para falar por voz diretamente comigo.
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2 mb-3 flex-wrap">
+                            <button class="btn btn-sm btn-secondary" style="border: 1px solid var(--neon-cyan); background: white;" onclick="enviarChat('Análise Geral do meu Painel')">📊 Analisar Meu Saldo Real</button>
+                            <button class="btn btn-sm btn-secondary" style="border: 1px solid #ff007f; background: white;" onclick="enviarChat('Dicas para economizar')">💡 Sugestões de Economia</button>
+                        </div>
+
+                        <div class="input-group">
+                            <button class="btn btn-mic" type="button" id="btn-microfone" onclick="alternarVoz()" title="Falar por voz">
+                                <i class="bi bi-mic-fill"></i>
+                            </button>
+                            <input type="text" class="form-control" id="input-chat" placeholder="Digite ou clique no microfone ao lado para falar...">
+                            <button class="btn btn-primary px-4" onclick="processarChatInput()">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-white text-dark">
+                <div class="modal-header" style="border-bottom: 1px solid rgba(0,0,0,0.1);">
+                    <h5 class="modal-title"><i class="bi bi-shield-lock-fill icon-glow"></i> Acessar Minha Conta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="event.preventDefault(); bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();">
+                        <div class="mb-3"><label class="form-label">E-mail</label><input type="email" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">Senha</label><input type="password" class="form-control" required></div>
+                        <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        let transacoes = JSON.parse(localStorage.getItem('f_transacoes')) || [];
+        let dividas = JSON.parse(localStorage.getItem('f_dividas')) || [];
+        let cofreTotal = parseFloat(localStorage.getItem('f_cofre_total')) || 0;
+        let valorHora = parseFloat(localStorage.getItem('f_valor_hora')) || 0;
+        let meuGrafico = null;
+        let recognition = null;
+        let gravando = false;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            atualizarTudo();
+            document.getElementById('t-data').valueAsDate = new Date();
+            configurarReconhecimentoVoz();
+        });
+
+        // ADICIONAR REGISTRO
+        document.getElementById('form-transacao').addEventListener('submit', (e) => {
+            e.preventDefault();
+            transacoes.push({
+                id: Date.now(),
+                tipo: document.getElementById('t-tipo').value,
+                valor: parseFloat(document.getElementById('t-valor').value),
+                categoria: document.getElementById('t-categoria').value,
+                data: document.getElementById('t-data').value,
+                desc: document.getElementById('t-desc').value
+            });
+            localStorage.setItem('f_transacoes', JSON.stringify(transacoes));
+            document.getElementById('form-transacao').reset();
+            document.getElementById('t-data').valueAsDate = new Date();
+            atualizarTudo();
+        });
+
+        // ADICIONAR DÍVIDA
+        document.getElementById('form-divida').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const total = parseFloat(document.getElementById('d-valor').value);
+            const parcelas = parseInt(document.getElementById('d-parcelas').value);
+            dividas.push({
+                id: Date.now(),
+                nome: document.getElementById('d-nome').value,
+                valor: total,
+                parcelas: parcelas,
+                parcelasPagas: 0,
+                valorParcela: total / parcelas
+            });
+            localStorage.setItem('f_dividas', JSON.stringify(dividas));
+            document.getElementById('form-divida').reset();
+            atualizarTudo();
+        });
+
+        // FUNÇÃO DE PAGAR PARCELA COM DESCRIÇÃO EXCLUSIVA
+        function pagarParcela(id) {
+            const divida = dividas.find(d => d.id === id);
+            if (divida && divida.parcelasPagas < divida.parcelas) {
+                const proximaParcelaNum = divida.parcelasPagas + 1;
+                const nomeSugestao = `Parcela ${proximaParcelaNum}/${divida.parcelas} - ${divida.nome}`;
+                
+                const nomeGastoDigitado = prompt("Escreva o nome/descrição para este gasto da parcela:", nomeSugestao);
+                if (nomeGastoDigitado === null) return; 
+                
+                divida.parcelasPagas++;
+                
+                transacoes.push({
+                    id: Date.now(),
+                    tipo: 'gasto',
+                    valor: divida.valorParcela,
+                    categoria: 'Outros',
+                    data: new Date().toISOString().split('T')[0],
+                    desc: nomeGastoDigitado.trim() || nomeSugestao
+                });
+                
+                localStorage.setItem('f_transacoes', JSON.stringify(transacoes));
+                localStorage.setItem('f_dividas', JSON.stringify(dividas));
+                atualizarTudo();
+            }
+        }
+
+        function deletarTransacao(id) { transacoes = transacoes.filter(t => t.id !== id); localStorage.setItem('f_transacoes', JSON.stringify(transacoes)); atualizarTudo(); }
+        function deletarDivida(id) { dividas = dividas.filter(d => d.id !== id); localStorage.setItem('f_dividas', JSON.stringify(dividas)); atualizarTudo(); }
+
+        // RECONHECIMENTO DE VOZ (MICROFONE)
+        function configurarReconhecimentoVoz() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.lang = 'pt-BR';
+                recognition.interimResults = false;
+
+                recognition.onstart = () => {
+                    gravando = true;
+                    document.getElementById('btn-microfone').classList.add('gravando');
+                };
+
+                recognition.onend = () => {
+                    gravando = false;
+                    document.getElementById('btn-microfone').classList.remove('gravando');
+                };
+
+                recognition.onresult = (event) => {
+                    const resultado = event.results[0][0].transcript;
+                    document.getElementById('input-chat').value = resultado;
+                };
+            }
+        }
+
+        function alternarVoz() {
+            if (!recognition) {
+                alert("O reconhecimento de voz não é suportado no seu navegador.");
+                return;
+            }
+            if (gravando) { recognition.stop(); } else { recognition.start(); }
+        }
+
+        // CHAT DE INTELIGÊNCIA
+        function enviarChat(msg) {
+            const caixa = document.getElementById('caixa-chat');
+            
+            const bUser = document.createElement('div');
+            bUser.className = 'balao user';
+            bUser.innerText = msg;
+            caixa.appendChild(bUser);
+            caixa.scrollTop = caixa.scrollHeight;
+
+            setTimeout(() => {
+                const bIA = document.createElement('div');
+                bIA.className = 'balao ia';
+
+                let tGanhos = 0, tGastos = 0;
+                transacoes.forEach(t => { t.tipo === 'ganho' ? tGanhos += t.valor : tGastos += t.valor; });
+                let saldoAtual = tGanhos - tGastos;
+
+                if (msg.toLowerCase().includes('análise') || msg.toLowerCase().includes('saldo') || msg.toLowerCase().includes('painel')) {
+                    bIA.innerText = `🤖 FinBot Analisou os Seus Dados:\n\n• Ganhos Totais: R$ ${tGanhos.toFixed(2)}\n• Gastos Totais: R$ ${tGastos.toFixed(2)}\n• Saldo Livre: R$ ${saldoAtual.toFixed(2)}\n\n${saldoAtual < 0 ? '⚠️ Atenção: O seu saldo atual está negativo.' : '✅ Excelente! O seu saldo está positivo!'}`;
+                } else if (msg.toLowerCase().includes('economizar') || msg.toLowerCase().includes('dica')) {
+                    bIA.innerText = `🤖 Dicas Rápidas de Economia Inteligente:\n\n1. Ative a calculadora na aba "O Valor do Meu Tempo" para evitar compras por impulso.\n2. Lembre-se de dar nomes claros para suas parcelas pagas no histórico.`;
+                } else {
+                    bIA.innerText = `🤖 Entendido! Li o seu banco de dados. Atualmente o seu saldo livre em conta é de R$ ${saldoAtual.toFixed(2)}. Qual dado gostaria de analisar agora por voz?`;
+                }
+
+                caixa.appendChild(bIA);
+                caixa.scrollTop = caixa.scrollHeight;
+            }, 600);
+        }
+
+        function processarChatInput() {
+            const input = document.getElementById('input-chat');
+            if(input.value.trim() !== "") {
+                enviarChat(input.value);
+                input.value = "";
+            }
+        }
+
+        // RENDERIZAR TELA ATUALIZADA
+        function atualizarTudo() {
+            const tBody = document.getElementById('tabela-transacoes');
+            tBody.innerHTML = transacoes.length === 0 ? '<tr><td colspan="6" class="text-center text-muted">Nenhum ganho ou gasto registrado ainda.</td></tr>' : '';
+            transacoes.forEach(t => {
+                tBody.innerHTML += `<tr>
+                    <td><span class="badge ${t.tipo === 'ganho' ? 'bg-success' : 'bg-danger'}">${t.tipo.toUpperCase()}</span></td>
+                    <td class="fw-medium">${t.desc}</td>
+                    <td>${t.categoria}</td>
+                    <td>${t.data.split('-').reverse().join('/')}</td>
+                    <td class="${t.tipo === 'ganho' ? 'text-success' : 'text-danger'} fw-bold">R$ ${t.valor.toFixed(2)}</td>
+                    <td><button class="btn btn-sm btn-outline-danger p-1" onclick="deletarTransacao(${t.id})"><i class="bi bi-trash"></i></button></td>
+                </tr>`;
+            });
+
+            const dBody = document.getElementById('tabela-dividas');
+            dBody.innerHTML = dividas.length === 0 ? '<tr><td colspan="5" class="text-center text-muted">Nenhuma dívida salva.</td></tr>' : '';
+            dividas.forEach(d => {
+                const quitada = d.parcelasPagas >= d.parcelas;
+                dBody.innerHTML += `<tr>
+                    <td class="fw-medium">${d.nome}</td>
+                    <td>R$ ${d.valor.toFixed(2)}</td>
+                    <td><span class="badge ${quitada ? 'bg-success' : 'bg-warning text-dark'}">${d.parcelasPagas} de ${d.parcelas} pagas</span></td>
+                    <td style="color: var(--neon-pink); font-weight: 600;">R$ ${d.valorParcela.toFixed(2)}</td>
+                    <td>
+                        ${quitada ? '<span class="text-success fw-bold"><i class="bi bi-check-all"></i> Quitado</span>' : 
+                        `<button class="btn btn-sm btn-success p-1 me-1" onclick="pagarParcela(${d.id})"><i class="bi bi-check-circle"></i> Pagar Parcela</button>`}
+                        <button class="btn btn-sm btn-outline-danger p-1" onclick="deletarDivida(${d.id})"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+
+            let ganhos = 0, gastos = 0;
+            transacoes.forEach(t => { t.tipo === 'ganho' ? ganhos += t.valor : gastos += t.valor; });
+            let saldo = ganhos - gastos;
+
+            document.getElementById('resumo-ganhos').innerText = `R$ ${ganhos.toFixed(2)}`;
+            document.getElementById('resumo-gastos').innerText = `R$ ${gastos.toFixed(2)}`;
+            document.getElementById('resumo-saldo').innerText = `R$ ${saldo.toFixed(2)}`;
+            document.getElementById('resumo-saldo').style.color = saldo < 0 ? "var(--neon-pink)" : "var(--neon-cyan)";
+            document.getElementById('cofre-total').innerText = `R$ ${cofreTotal.toFixed(2)}`;
+            if(cofreTotal > 0) document.getElementById('conquista-1').classList.remove('bloqueada');
+
+            renderizarGrafico();
+        }
+
+        // GRÁFICO REAJUSTADO PARA TEMA CLARO
+        function renderizarGrafico() {
+            const ctx = document.getElementById('meuGrafico').getContext('2d');
+            let cats = { Alimentação: 0, Moradia: 0, Lazer: 0, Outros: 0 };
+            transacoes.forEach(t => { if(t.tipo === 'gasto' && cats[t.categoria] !== undefined) cats[t.categoria] += t.valor; });
+            if(meuGrafico) meuGrafico.destroy();
+            meuGrafico = new Chart(ctx, {
+                type: 'doughnut',
+                data: { 
+                    labels: Object.keys(cats), 
+                    datasets: [{ 
+                        data: Object.values(cats), 
+                        backgroundColor: ['#ffaa00', '#00b4d8', '#ff007f', '#7209b7'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }] 
+                },
+                options: { 
+                    responsive: true, 
+                    plugins: { 
+                        legend: { position: 'bottom', labels: { color: '#475569' } } 
+                    } 
+                }
+            });
+        }
+
+        document.getElementById('form-valor-hora').addEventListener('submit', (e) => {
+            e.preventDefault();
+            valorHora = parseFloat(document.getElementById('h-salario').value) / parseFloat(document.getElementById('h-horas').value);
+            localStorage.setItem('f_valor_hora', valorHora);
+            document.getElementById('resultado-valor-hora').innerHTML = `<span style="color: var(--neon-green);" class="fw-bold">A sua hora de trabalho vale: R$ ${valorHora.toFixed(2)}</span>`;
+        });
+
+        function calcularCustoEmHoras() {
+            const preco = parseFloat(document.getElementById('p-preco').value);
+            if(valorHora <= 0) { alert('Configure a sua hora primeiro no Passo 1.'); return; }
+            document.getElementById('resultado-custo-produto').innerHTML = `<div class="alert alert-light text-dark" style="border: 1px solid var(--neon-cyan)">Isto equivale a <strong>${(preco / valorHora).toFixed(1)} horas</strong> reais de esforço do seu trabalho.</div>`;
+        }
+
+        document.getElementById('form-gasto-evitado').addEventListener('submit', (e) => {
+            e.preventDefault();
+            cofreTotal += parseFloat(document.getElementById('c-valor').value);
+            localStorage.setItem('f_cofre_total', cofreTotal);
+            document.getElementById('form-gasto-evitado').reset();
+            atualizarTudo();
+        });
+
+        function limparBanco() { if(confirm("Deseja mesmo apagar todo o histórico da aplicação?")) { localStorage.clear(); location.reload(); } }
+    </script>
+</body>
+</html>
