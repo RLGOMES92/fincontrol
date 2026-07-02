@@ -815,6 +815,16 @@
         });
 
         function limparBanco() { if(confirm("Deseja mesmo apagar todo o histórico da aplicação?")) { localStorage.clear(); location.reload(); } }
+    /* Correção Rápida Mobile */
+@media (max-width: 768px) {
+    .nav-tabs { 
+        display: flex !important; 
+        flex-wrap: nowrap !important; 
+        overflow-x: auto !important; 
+        -webkit-overflow-scrolling: touch; 
+    }
+    .nav-item { flex: 0 0 auto; }
+}
     </script>
 </body>
 </html>
