@@ -1,830 +1,1273 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinControl | Meu Painel Financeiro Inteligente</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
-    <style>
-        :root {
-            /* Tema Pastel Claro */
-            --bg-principal: #f4f6fc;
-            --bg-card: rgba(255, 255, 255, 0.85);
-            --bg-card-hover: rgba(255, 255, 255, 0.95);
-            --border-color: rgba(0, 180, 216, 0.2);
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            
-            /* Cores de Destaque */
-            --neon-cyan: #0096c7;
-            --neon-pink: #d90429;
-            --neon-green: #2b9348;
-            --neon-purple: #7209b7;
-            
-            --accent-primary: linear-gradient(135deg, #4361ee, #4cc9f0);
-            --accent-success: linear-gradient(135deg, #2b9348, #55a630);
-            --accent-danger: linear-gradient(135deg, #e63946, #d90429);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinControl // Central de Comando Financeira</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-        body {
-            background-color: var(--bg-principal);
-            background-image: 
-                radial-gradient(at 0% 0%, #e0e7ff 0px, transparent 50%),
-                radial-gradient(at 100% 100%, #fae8ff 0px, transparent 50%);
-            background-size: 100% 100%;
-            min-height: 100vh;
-            font-family: 'Inter', sans-serif;
-            color: var(--text-primary);
-        }
+<style>
+/* ============================================================
+   FINCONTROL // MODERNO + NEON (dark, elegante, com acentos vibrantes)
+   Fundo grafite neutro, sem grid técnico, mas com cores de acento
+   neon reintroduzidas de forma equilibrada (glow discreto e pontual).
+   ============================================================ */
+:root{
+  --bg-deep:#0d0f16;
+  --bg-deep-2:#12141d;
+  --bg-card: rgba(22, 25, 35, 0.72);
+  --bg-card-solid:#181b26;
+  --border-neon: rgba(255, 255, 255, 0.08);
+  --border-neon-strong: rgba(0, 229, 255, 0.4);
+  --text-primary:#f2f4f8;
+  --text-secondary:#8b90a0;
+  --cyan:#00e5ff;
+  --pink:#ff2d78;
+  --green:#00ffab;
+  --purple:#a855f7;
+  --amber:#ffb020;
+  --grad-cyan: linear-gradient(135deg,#00e5ff,#3d7dff);
+  --grad-pink: linear-gradient(135deg,#ff2d78,#c400ff);
+  --grad-green: linear-gradient(135deg,#00ffab,#00b46e);
+  --ease: cubic-bezier(.16,.84,.44,1);
+}
 
-        .container {
-            max-width: 1240px;
-            margin-top: 30px;
-            margin-bottom: 30px;
-        }
+*{ box-sizing:border-box; }
 
-        /* LOGO E TOPO PASTEL */
-        .main-header {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(0, 150, 199, 0.15);
-            border-radius: 20px;
-            padding: 20px 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-        }
+body{
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family:'Rajdhani', sans-serif;
+  min-height:100vh;
+  position:relative;
+  overflow-x:hidden;
+}
 
-        .logo-text {
-            font-weight: 800;
-            font-size: 1.8rem;
-            letter-spacing: -0.5px;
-            color: #1e293b;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        
-        .logo-accent {
-            color: #ff007f;
-            text-shadow: 0 0 8px rgba(255, 0, 127, 0.2);
-        }
+/* FUNDO — gradiente suave e neutro, sem grid técnico */
+body::before{
+  content:"";
+  position:fixed; inset:0; z-index:-2;
+  background: linear-gradient(160deg, #15171f 0%, #111319 45%, #0e0f14 100%);
+}
+body::after{
+  content:"";
+  position:fixed; inset:0; z-index:-1;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(0,229,255,0.06), transparent 45%),
+    radial-gradient(circle at 90% 100%, rgba(0,255,171,0.05), transparent 45%);
+}
 
-        .icon-glow {
-            color: var(--neon-cyan);
-            filter: drop-shadow(0 2px 4px rgba(0, 150, 199, 0.3));
-        }
+#particulas{
+  position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.25;
+}
 
-        /* CARDS */
-        .card {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
-            margin-bottom: 25px;
-            transition: all 0.3s ease;
-        }
+h1,h2,h3,h4,h5,h6, .logo-text{ font-family:'Orbitron', sans-serif; letter-spacing:.5px; }
+.font-mono{ font-family:'JetBrains Mono', monospace !important; }
 
-        .card:hover {
-            background: var(--bg-card-hover);
-            transform: translateY(-2px);
-            border-color: rgba(0, 150, 199, 0.3);
-            box-shadow: 0 12px 30px rgba(0, 150, 199, 0.1);
-        }
+.container{ max-width:1280px; margin-top:30px; margin-bottom:40px; position:relative; z-index:1; }
 
-        .card-header {
-            background: rgba(0, 0, 0, 0.01);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-            color: var(--text-primary);
-            font-weight: 600;
-            padding: 18px 24px;
-        }
+/* HEADER */
+.main-header{
+  background: linear-gradient(180deg, rgba(16,22,38,0.85), rgba(11,15,25,0.85));
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border:1px solid var(--border-neon);
+  border-radius:18px;
+  padding:20px 30px;
+  margin-bottom:28px;
+  box-shadow: 0 0 0 1px rgba(0,229,255,0.03), 0 20px 50px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.03);
+  position:relative;
+  overflow:hidden;
+}
+.logo-text{ font-weight:800; font-size:1.5rem; letter-spacing:.5px; color:#fff; }
+.logo-accent{ color: var(--cyan); text-shadow:0 0 16px rgba(0,229,255,.55); }
+.icon-glow{ color: var(--cyan); filter: drop-shadow(0 0 6px rgba(0,229,255,.5)); }
+.status-pill{
+  font-family:'JetBrains Mono', monospace; font-size:.72rem; letter-spacing:1px;
+  color: var(--green); border:1px solid rgba(0,255,171,.35); background:rgba(0,255,171,.08);
+  padding:4px 10px; border-radius:20px; display:inline-flex; align-items:center; gap:6px;
+}
+.status-pill .dot{ width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:pulseDot 1.6s infinite; }
+@keyframes pulseDot{ 0%,100%{opacity:1;} 50%{opacity:.3;} }
 
-        /* ABAS ESTILO PASTEL ATRAENTE */
-        .nav-tabs {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            gap: 6px;
-            margin-bottom: 25px;
-        }
+/* CARDS */
+.card{
+  background: var(--bg-card);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border:1px solid var(--border-neon);
+  border-radius:16px;
+  box-shadow: 0 15px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.03);
+  margin-bottom:25px;
+  transition: all .35s var(--ease);
+}
+.card:hover{
+  border-color: var(--border-neon-strong);
+  box-shadow: 0 15px 45px rgba(0,229,255,.16), inset 0 1px 0 rgba(255,255,255,.05);
+  transform: translateY(-2px);
+}
+.card-header{
+  background: rgba(0,229,255,0.04);
+  border-bottom:1px solid var(--border-neon);
+  color:#fff; font-weight:600; letter-spacing:.5px;
+  padding:16px 22px;
+  font-family:'Orbitron', sans-serif; font-size:.85rem; text-transform:uppercase;
+}
 
-        .nav-tabs .nav-link {
-            color: var(--text-secondary);
-            border: 1px solid transparent;
-            border-radius: 12px;
-            padding: 12px 22px;
-            font-weight: 600;
-            background: rgba(0, 0, 0, 0.02);
-            transition: all 0.2s ease;
-        }
+/* TABS */
+.nav-tabs{ border-bottom:1px solid rgba(0,229,255,0.1); gap:8px; margin-bottom:25px; flex-wrap:nowrap; overflow-x:auto; }
+.nav-tabs .nav-link{
+  color: var(--text-secondary); border:1px solid rgba(0,229,255,0.12);
+  border-radius:10px; padding:11px 20px; font-weight:600; letter-spacing:.3px;
+  background: rgba(16,22,38,0.5); transition: all .3s var(--ease); white-space:nowrap;
+}
+.nav-tabs .nav-link:hover{ color:var(--cyan); border-color: var(--border-neon-strong); box-shadow:0 0 15px rgba(0,229,255,.15); }
+.nav-tabs .nav-link.active{
+  color:#0c1420; background: var(--grad-cyan); border-color:transparent;
+  box-shadow: 0 4px 22px rgba(0,229,255,.4);
+}
 
-        .nav-tabs .nav-link:hover {
-            color: var(--neon-cyan);
-            background: rgba(0, 150, 199, 0.05);
-            border-color: rgba(0, 150, 199, 0.2);
-        }
+/* BUTTONS */
+.btn{ border-radius:10px; padding:10px 20px; font-weight:700; letter-spacing:.3px; border:none; transition: all .3s var(--ease); }
+.btn-primary{ background: var(--grad-cyan); color:#04101a; box-shadow:0 4px 20px rgba(0,229,255,.3); }
+.btn-primary:hover{ transform: translateY(-2px); box-shadow:0 8px 28px rgba(0,229,255,.5); }
+.btn-success{ background: var(--grad-green); color:#03140c; box-shadow:0 4px 20px rgba(0,255,171,.25); }
+.btn-success:hover{ transform: translateY(-2px); box-shadow:0 8px 28px rgba(0,255,171,.45); }
+.btn-danger{ background: var(--grad-pink); color:#fff; box-shadow:0 4px 20px rgba(255,45,120,.3); }
+.btn-danger:hover{ transform: translateY(-2px); box-shadow:0 8px 28px rgba(255,45,120,.5); }
+.btn-secondary{ background: rgba(255,255,255,.05); color:var(--text-primary); border:1px solid rgba(255,255,255,.08); }
+.btn-secondary:hover{ background: rgba(255,255,255,.1); color:#fff; }
+.btn-outline-danger{ border:1px solid var(--pink); color:var(--pink); background:transparent; }
+.btn-outline-danger:hover{ background:var(--pink); color:#fff; }
 
-        .nav-tabs .nav-link.active {
-            color: #ffffff;
-            background: var(--accent-primary);
-            border-color: transparent;
-            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
-        }
+/* FORMS */
+.form-select, .form-control{
+  background-color: rgba(9,13,22,.7); border:1px solid rgba(0,229,255,.18);
+  color: var(--text-primary); border-radius:10px; padding:11px 15px;
+}
+.form-select:focus, .form-control:focus{
+  background-color: rgba(9,13,22,.9); border-color: var(--cyan); color:#fff;
+  box-shadow: 0 0 0 4px rgba(0,229,255,.15);
+}
+.form-control::placeholder{ color: rgba(125,141,179,.6); }
+.form-label{ color: var(--text-secondary); font-weight:600; font-size:.85rem; letter-spacing:.3px; text-transform:uppercase; }
 
-        /* BOTÕES */
-        .btn {
-            border-radius: 12px;
-            padding: 10px 20px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            border: none;
-        }
+/* TABLES */
+.table-responsive{ border-radius:12px; border:1px solid rgba(0,229,255,.12); background: rgba(9,13,22,.5); }
+.table{ color: var(--text-primary); margin-bottom:0; }
+.table thead th{
+  background: rgba(0,229,255,0.05); color: var(--cyan); font-weight:700; font-size:.75rem;
+  letter-spacing:1px; text-transform:uppercase; padding:14px 20px; border-bottom:1px solid rgba(0,229,255,.15);
+}
+.table tbody td{ padding:13px 20px; vertical-align:middle; border-bottom:1px solid rgba(255,255,255,.04); }
+.table-hover tbody tr:hover{ background-color: rgba(0,229,255,.04); }
 
-        .btn-primary { background: var(--accent-primary); color: #fff; box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2); }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(67, 97, 238, 0.3); }
-        .btn-success { background: var(--accent-success); color: #fff; box-shadow: 0 4px 12px rgba(43, 147, 72, 0.2); }
-        .btn-success:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(43, 147, 72, 0.3); }
-        .btn-danger { background: var(--accent-danger); color: #fff; box-shadow: 0 4px 12px rgba(230, 57, 70, 0.2); }
-        .btn-danger:hover { box-shadow: 0 6px 15px rgba(230, 57, 70, 0.3); }
-        .btn-secondary { background: rgba(0,0,0,0.05); color: var(--text-primary); border: 1px solid rgba(0,0,0,0.05); }
-        .btn-secondary:hover { background: rgba(0,0,0,0.1); color: var(--text-primary); }
+/* CHAT */
+.chat-box{
+  height:400px; overflow-y:auto; padding:22px; background: rgba(9,13,22,.6);
+  border-radius:14px; border:1px solid rgba(0,229,255,.15); margin-bottom:20px;
+  display:flex; flex-direction:column; gap:14px;
+}
+.balao{ padding:13px 17px; border-radius:14px; max-width:78%; font-size:.95rem; line-height:1.5; white-space:pre-line; }
+.balao.ia{
+  background: rgba(0,229,255,.06); border:1px solid rgba(0,229,255,.2);
+  align-self:flex-start; border-top-left-radius:4px; color:var(--text-primary);
+}
+.balao.user{
+  background: var(--grad-cyan); color:#04101a; align-self:flex-end;
+  border-top-right-radius:4px; box-shadow:0 4px 16px rgba(0,229,255,.3); font-weight:600;
+}
+.balao.preditiva{ border:1px solid rgba(168,85,247,.4); background: rgba(168,85,247,.08); }
 
-        /* FORMULÁRIOS */
-        .form-select, .form-control {
-            background-color: #ffffff;
-            border: 1px solid rgba(0, 0, 0, 0.12);
-            color: var(--text-primary);
-            border-radius: 12px;
-            padding: 12px 16px;
-        }
-        .form-select:focus, .form-control:focus {
-            background-color: #ffffff;
-            border-color: var(--neon-cyan);
-            color: var(--text-primary);
-            box-shadow: 0 0 0 4px rgba(0, 150, 199, 0.15);
-        }
-        .form-label { color: var(--text-secondary); font-weight: 500; }
+.btn-mic{ background: rgba(255,255,255,.04); border:1px solid rgba(0,229,255,.2); color: var(--text-secondary); }
+.btn-mic:hover{ color: var(--cyan); border-color: var(--cyan); box-shadow:0 0 15px rgba(0,229,255,.2); }
+.btn-mic.gravando{
+  background: rgba(255,45,120,.12) !important; border-color: var(--pink) !important; color: var(--pink) !important;
+  animation: pulseMicNeon 1.4s infinite;
+}
+@keyframes pulseMicNeon{
+  0%{ box-shadow:0 0 0 0 rgba(255,45,120,.4); }
+  70%{ box-shadow:0 0 0 12px rgba(255,45,120,0); }
+  100%{ box-shadow:0 0 0 0 rgba(255,45,120,0); }
+}
 
-        /* TABELAS */
-        .table-responsive { border-radius: 12px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff; }
-        .table { color: var(--text-primary); margin-bottom: 0; }
-        .table thead th {
-            background: rgba(0, 0, 0, 0.02);
-            color: var(--text-secondary);
-            font-weight: 600;
-            padding: 14px 20px;
-            border-bottom: 1px solid rgba(0,0,0,0.06);
-        }
-        .table tbody td { padding: 14px 20px; vertical-align: middle; border-bottom: 1px solid rgba(0,0,0,0.04); }
-        .table-hover tbody tr:hover { background-color: rgba(0, 0, 0, 0.01); }
+/* RESUMO CARDS */
+.resumo-card{
+  background: rgba(9,13,22,.6); border-radius:14px; padding:20px; border:1px solid rgba(0,229,255,.12);
+  text-align:center; position:relative; overflow:hidden;
+}
+.resumo-card h3{ font-size:1.55rem; font-weight:700; margin-bottom:0; }
+.resumo-card::after{ content:""; position:absolute; top:0; left:0; right:0; height:2px; }
+.resumo-card.border-success::after{ background: var(--grad-green); box-shadow:0 0 12px var(--green); }
+.resumo-card.border-danger::after{ background: var(--grad-pink); box-shadow:0 0 12px var(--pink); }
+.resumo-card.border-primary::after{ background: var(--grad-cyan); box-shadow:0 0 12px var(--cyan); }
+.resumo-card h6{ color: var(--text-secondary); font-size:.75rem; letter-spacing:1px; text-transform:uppercase; }
 
-        /* CHAT E MICROFONE */
-        .chat-box {
-            height: 400px;
-            overflow-y: auto;
-            padding: 24px;
-            background: #ffffff;
-            border-radius: 16px;
-            border: 1px solid rgba(0,0,0,0.06);
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .balao {
-            padding: 14px 18px;
-            border-radius: 16px;
-            max-width: 75%;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .balao.ia {
-            background: #f1f5f9;
-            border: 1px solid rgba(0, 0, 0, 0.04);
-            align-self: flex-start;
-            border-top-left-radius: 4px;
-            color: var(--text-primary);
-        }
-        .balao.user {
-            background: var(--accent-primary);
-            color: #ffffff;
-            align-self: flex-end;
-            border-top-right-radius: 4px;
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
-        }
-        
-        /* Botão do Microfone Estilo Pastel/Vibrante */
-        .btn-mic {
-            background: rgba(0, 0, 0, 0.03);
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            color: var(--text-secondary);
-            transition: all 0.2s;
-        }
-        .btn-mic:hover {
-            color: var(--neon-cyan);
-            border-color: var(--neon-cyan);
-            background: rgba(0, 150, 199, 0.05);
-        }
-        .btn-mic.gravando {
-            background: #ffe3e3 !important;
-            border-color: #ff4d4d !important;
-            color: #d90429 !important;
-            animation: pulseMicNeon 1.5s infinite;
-        }
-        @keyframes pulseMicNeon {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(217, 4, 41, 0.3); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(217, 4, 41, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(217, 4, 41, 0); }
-        }
+/* IA PREDITIVA */
+.ia-preditiva-card{
+  background: linear-gradient(135deg, rgba(168,85,247,.1), rgba(0,229,255,.05));
+  border:1px solid rgba(168,85,247,.35); border-radius:16px; padding:24px;
+  position:relative; overflow:hidden;
+}
+.ia-preditiva-card .badge-ia{
+  font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--purple);
+  border:1px solid rgba(168,85,247,.5); padding:3px 10px; border-radius:20px; letter-spacing:1px;
+}
 
-        /* RESUMOS */
-        .resumo-card {
-            background: #ffffff; border-radius: 14px; padding: 20px; border: 1px solid rgba(0,0,0,0.06); text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-        }
-        .resumo-card.border-success { border-left: 5px solid var(--neon-green); }
-        .resumo-card.border-danger { border-left: 5px solid var(--neon-pink); }
-        .resumo-card.border-primary { border-left: 5px solid var(--neon-cyan); }
-        
-        .conquista-card {
-            background: #ffffff; border: 1px solid rgba(0,0,0,0.06); border-radius: 14px; padding: 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 10px;
-        }
-        .conquista-card.bloqueada { opacity: 0.4; background: rgba(0,0,0,0.02); }
-        .conquista-icone { font-size: 1.8rem; color: #fbbf24; }
-        .font-mono { font-family: 'JetBrains Mono', monospace !important; }
-    </style>
+#cofre-total{ font-size:1.15rem; }
+
+.conquista-card{
+  background: rgba(9,13,22,.6); border:1px solid rgba(0,229,255,.12); border-radius:14px;
+  padding:15px; display:flex; align-items:center; gap:15px; margin-bottom:10px; transition: all .3s var(--ease);
+}
+.conquista-card.bloqueada{ opacity:.35; }
+.conquista-card:not(.bloqueada){ border-color: rgba(255,176,32,.4); box-shadow:0 0 15px rgba(255,176,32,.1); }
+.conquista-icone{ font-size:1.8rem; color: var(--amber); filter: drop-shadow(0 0 6px rgba(255,176,32,.6)); }
+
+.modal-content{ background: var(--bg-card-solid); border:1px solid var(--border-neon); color:var(--text-primary); border-radius:16px; }
+.modal-header{ border-bottom:1px solid rgba(0,229,255,.15); }
+.btn-close{ filter: invert(1); }
+
+::-webkit-scrollbar{ width:8px; height:8px; }
+::-webkit-scrollbar-track{ background: rgba(255,255,255,.02); }
+::-webkit-scrollbar-thumb{ background: rgba(0,229,255,.3); border-radius:10px; }
+
+/* ============================================================
+   LOGIN / CADASTRO — abas dentro do modal
+   ============================================================ */
+.auth-tabs{ display:flex; gap:8px; margin-bottom:18px; }
+.auth-tab-btn{
+  flex:1; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.03); color: var(--text-secondary); font-weight:700;
+  letter-spacing:.3px; transition: all .3s var(--ease); cursor:pointer;
+}
+.auth-tab-btn.active{ background: var(--grad-cyan); color:#0c1420; border-color:transparent; }
+.auth-erro{
+  display:none; background: rgba(255,45,120,.1); border:1px solid rgba(255,45,120,.35);
+  color: var(--pink); padding:9px 14px; border-radius:10px; font-size:.85rem; margin-bottom:14px;
+}
+.auth-sucesso{
+  display:none; background: rgba(0,255,171,.1); border:1px solid rgba(0,255,171,.35);
+  color: var(--green); padding:9px 14px; border-radius:10px; font-size:.85rem; margin-bottom:14px;
+}
+#user-logado-pill{
+  font-family:'Rajdhani', sans-serif; font-size:.85rem; color: var(--text-primary);
+  border:1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.04);
+  padding:6px 14px; border-radius:20px; display:none; align-items:center; gap:8px;
+}
+
+/* ============================================================
+   ROBÔ DE ALERTAS — avisos de saldo negativo / compras de risco
+   ============================================================ */
+#robo-alerta{
+  position: fixed; bottom: 24px; right: 24px; z-index: 1080;
+  max-width: 340px; display: none; gap: 12px;
+  background: var(--bg-card-solid); border-radius: 16px; padding: 16px;
+  border: 1px solid rgba(255,255,255,.1);
+  box-shadow: 0 20px 45px rgba(0,0,0,.5);
+  animation: subirAlerta .4s var(--ease);
+}
+#robo-alerta.critico{ border-color: rgba(255,45,120,.5); }
+#robo-alerta.atencao{ border-color: rgba(255,176,32,.5); }
+@keyframes subirAlerta{ from{ opacity:0; transform: translateY(16px); } to{ opacity:1; transform: translateY(0); } }
+
+.robo-icone-wrap{
+  width: 42px; height: 42px; min-width:42px; border-radius: 50%; display:flex; align-items:center; justify-content:center;
+  background: rgba(255,255,255,.06); font-size:1.3rem; align-self:flex-start;
+}
+#robo-alerta.critico .robo-icone-wrap{ background: rgba(255,45,120,.15); color: var(--pink); animation: balancarRobo 1s infinite; }
+#robo-alerta.atencao .robo-icone-wrap{ background: rgba(255,176,32,.15); color: var(--amber); }
+@keyframes balancarRobo{ 0%,100%{ transform: rotate(-6deg);} 50%{ transform: rotate(6deg);} }
+
+#robo-alerta .robo-texto{ font-size:.88rem; line-height:1.45; color: var(--text-primary); }
+#robo-alerta .robo-titulo{ font-weight:700; font-size:.8rem; letter-spacing:.4px; text-transform:uppercase; margin-bottom:4px; }
+#robo-alerta.critico .robo-titulo{ color: var(--pink); }
+#robo-alerta.atencao .robo-titulo{ color: var(--amber); }
+#robo-alerta .robo-fechar{
+  background:none; border:none; color: var(--text-secondary); position:absolute; top:10px; right:12px; font-size:1rem; cursor:pointer;
+}
+
+/* Modal de confirmação de compra de alto valor */
+.modal-robo-icone{
+  width:56px; height:56px; border-radius:50%; background: rgba(255,176,32,.12); color: var(--amber);
+  display:flex; align-items:center; justify-content:center; font-size:1.6rem; margin:0 auto 14px auto;
+}
+
+/* CORREÇÃO MOBILE — movido corretamente para dentro de <style> */
+@media (max-width: 768px) {
+  .nav-tabs{ display:flex !important; flex-wrap:nowrap !important; overflow-x:auto !important; -webkit-overflow-scrolling:touch; }
+  .nav-item{ flex:0 0 auto; }
+  .logo-text{ font-size:1.3rem; }
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <header class="main-header d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-cpu icon-glow fs-3"></i>
-                <h1 class="mb-0 logo-text">Fin<span class="logo-accent">Control</span></h1>
-            </div>
-            <div id="usuario-topo" class="d-flex gap-2">
-                <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="bi bi-person"></i> Entrar</button>
-                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="bi bi-plus-lg"></i> Criar Conta</button>
-            </div>
-        </header>
+<canvas id="particulas"></canvas>
 
-        <ul class="nav nav-tabs" id="painelTabs" role="tablist">
-            <li class="nav-item">
-                <button class="nav-link active" id="aba-1" data-bs-toggle="tab" data-bs-target="#transacoes" type="button"><i class="bi bi-cash-coin"></i> Ganhos e Gastos</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" id="aba-2" data-bs-toggle="tab" data-bs-target="#dividas" type="button"><i class="bi bi-credit-card-2-front"></i> Minhas Dívidas</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" id="aba-3" data-bs-toggle="tab" data-bs-target="#resumo" type="button"><i class="bi bi-pie-chart"></i> Resumo Geral</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" id="aba-4" data-bs-toggle="tab" data-bs-target="#preco-horas" type="button"><i class="bi bi-hourglass-split"></i> O Valor do Meu Tempo</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" id="aba-5" data-bs-toggle="tab" data-bs-target="#cofre" type="button"><i class="bi bi-safe2"></i> Cofre e Conquistas</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" id="aba-6" data-bs-toggle="tab" data-bs-target="#assistente" type="button"><i class="bi bi-robot"></i> Assistente Virtual</button>
-            </li>
-        </ul>
+<div class="container">
+  <header class="main-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-cpu-fill icon-glow fs-3"></i>
+      <h1 class="mb-0 logo-text">FIN<span class="logo-accent">CONTROL</span></h1>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <span class="status-pill"><span class="dot"></span> SISTEMA ONLINE</span>
+      <span id="user-logado-pill"><i class="bi bi-person-check-fill" style="color:var(--green);"></i> <span id="user-logado-nome"></span>
+        <button class="btn btn-secondary btn-sm py-0 px-2 ms-1" onclick="fazerLogout()">Sair</button>
+      </span>
+      <div id="usuario-topo" class="d-flex gap-2">
+        <button class="btn btn-secondary btn-sm" onclick="abrirAuthModal('login')"><i class="bi bi-person"></i> Entrar</button>
+        <button class="btn btn-primary btn-sm" onclick="abrirAuthModal('cadastro')"><i class="bi bi-plus-lg"></i> Criar Conta</button>
+      </div>
+    </div>
+  </header>
 
-        <div class="tab-content" id="conteudoAbas">
-            <div class="tab-pane fade show active" id="transacoes">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-header">Adicionar Novo Registro</div>
-                            <div class="card-body">
-                                <form id="form-transacao">
-                                    <div class="mb-3">
-                                        <label class="form-label">Tipo</label>
-                                        <select class="form-select" id="t-tipo" required>
-                                            <option value="ganho">🟢 Ganho (Entrada)</option>
-                                            <option value="gasto">🔴 Gasto (Saída)</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Valor (R$)</label>
-                                        <input type="number" class="form-control" id="t-valor" step="0.01" placeholder="0,00" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Categoria</label>
-                                        <select class="form-select" id="t-categoria" required>
-                                            <option value="Salário">Salário</option>
-                                            <option value="Alimentação">Alimentação</option>
-                                            <option value="Moradia">Moradia</option>
-                                            <option value="Lazer">Lazer</option>
-                                            <option value="Outros">Outros</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Data</label>
-                                        <input type="date" class="form-control" id="t-data" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Nome do Gasto / Descrição</label>
-                                        <input type="text" class="form-control" id="t-desc" placeholder="Ex: Mercado / Conta de Luz" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary w-100">Adicionar na Lista</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card">
-                            <div class="card-header">Histórico de Entradas e Saídas</div>
-                            <div class="card-body p-3">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Tipo</th>
-                                                <th>Descrição</th>
-                                                <th>Categoria</th>
-                                                <th>Data</th>
-                                                <th>Valor</th>
-                                                <th>Ação</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="tabela-transacoes"></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+  <ul class="nav nav-tabs" id="painelTabs" role="tablist">
+    <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#transacoes" type="button"><i class="bi bi-cash-coin"></i> Ganhos e Gastos</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dividas" type="button"><i class="bi bi-credit-card-2-front"></i> Minhas Dívidas</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#resumo" type="button"><i class="bi bi-pie-chart"></i> Resumo Geral</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#preco-horas" type="button"><i class="bi bi-hourglass-split"></i> O Valor do Meu Tempo</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#cofre" type="button"><i class="bi bi-safe2"></i> Cofre e Conquistas</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#assistente" type="button"><i class="bi bi-robot"></i> Assistente IA</button></li>
+  </ul>
+
+  <div class="tab-content" id="conteudoAbas">
+
+    <!-- TRANSAÇÕES -->
+    <div class="tab-pane fade show active" id="transacoes">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">Adicionar Novo Registro</div>
+            <div class="card-body">
+              <form id="form-transacao">
+                <div class="mb-3">
+                  <label class="form-label">Tipo</label>
+                  <select class="form-select" id="t-tipo" required>
+                    <option value="ganho">🟢 Ganho (Entrada)</option>
+                    <option value="gasto">🔴 Gasto (Saída)</option>
+                  </select>
                 </div>
+                <div class="mb-3">
+                  <label class="form-label">Valor (R$)</label>
+                  <input type="number" class="form-control" id="t-valor" step="0.01" placeholder="0,00" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Categoria</label>
+                  <select class="form-select" id="t-categoria" required>
+                    <option value="Salário">Salário</option>
+                    <option value="Alimentação">Alimentação</option>
+                    <option value="Moradia">Moradia</option>
+                    <option value="Transporte">Transporte</option>
+                    <option value="Lazer">Lazer</option>
+                    <option value="Outros">Outros</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Data</label>
+                  <input type="date" class="form-control" id="t-data" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Nome do Gasto / Descrição</label>
+                  <input type="text" class="form-control" id="t-desc" placeholder="Ex: Mercado / Conta de Luz" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Adicionar na Lista</button>
+              </form>
             </div>
-
-            <div class="tab-pane fade" id="dividas">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-header">Adicionar Nova Dívida</div>
-                            <div class="card-body">
-                                <form id="form-divida">
-                                    <div class="mb-3">
-                                        <label class="form-label">Nome da Dívida / Credor</label>
-                                        <input type="text" class="form-control" id="d-nome" placeholder="Ex: Cartão de Crédito" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Valor Total (R$)</label>
-                                        <input type="number" class="form-control" id="d-valor" step="0.01" placeholder="0,00" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Total de Parcelas</label>
-                                        <input type="number" class="form-control" id="d-parcelas" placeholder="Ex: 12" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary w-100">Salvar Dívida</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card">
-                            <div class="card-header">Controle de Dívidas e Parcelas Pagas</div>
-                            <div class="card-body p-3">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Dívida</th>
-                                                <th>Valor Total</th>
-                                                <th>Progresso Parcelas</th>
-                                                <th>Valor da Parcela</th>
-                                                <th>Ações</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="tabela-dividas"></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="resumo">
-                <div class="row mb-4">
-                    <div class="col-md-4">
-                        <div class="resumo-card border-success">
-                            <h6 class="text-secondary">Total de Ganhos</h6>
-                            <h3 style="color: var(--neon-green);" id="resumo-ganhos">R$ 0,00</h3>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="resumo-card border-danger">
-                            <h6 class="text-secondary">Total de Gastos</h6>
-                            <h3 style="color: var(--neon-pink);" id="resumo-gastos">R$ 0,00</h3>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="resumo-card border-primary">
-                            <h6 class="text-secondary">Saldo Atual</h6>
-                            <h3 style="color: var(--neon-cyan);" id="resumo-saldo">R$ 0,00</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header">Gráfico por Categoria</div>
-                    <div class="card-body d-flex justify-content-center">
-                        <div style="width: 100%; max-width: 400px;">
-                            <canvas id="meuGrafico"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="text-center">
-                    <button class="btn btn-outline-danger btn-sm" onclick="limparBanco()"><i class="bi bi-trash"></i> Apagar Todos os Dados</button>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="preco-horas">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">1. Configurar o Valor da Sua Hora</div>
-                            <div class="card-body">
-                                <form id="form-valor-hora">
-                                    <div class="mb-3">
-                                        <label class="form-label">Seu Salário Mensal Líquido (R$)</label>
-                                        <input type="number" class="form-control" id="h-salario" placeholder="Ex: 4000" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Horas trabalhadas por mês</label>
-                                        <input type="number" class="form-control" id="h-horas" placeholder="Ex: 160" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary w-100">Calcular Valor da Hora</button>
-                                </form>
-                                <div id="resultado-valor-hora" class="mt-3 font-mono text-center"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">2. Calculadora de Impulso de Compra</div>
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <label class="form-label">Preço do Produto (R$)</label>
-                                    <input type="number" class="form-control" id="p-preco" placeholder="Ex: 500">
-                                </div>
-                                <button class="btn btn-success w-100" onclick="calcularCustoEmHoras()">Analisar Custo em Horas</button>
-                                <div id="resultado-custo-produto" class="mt-4 text-center"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="cofre">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card mb-4">
-                            <div class="card-header">Guardar dinheiro economizado</div>
-                            <div class="card-body">
-                                <form id="form-gasto-evitado">
-                                    <div class="mb-3">
-                                        <label class="form-label">Valor Poupado (R$)</label>
-                                        <input type="number" class="form-control" id="c-valor" step="0.01" placeholder="0,00" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Descrição da Economia</label>
-                                        <input type="text" class="form-control" id="c-desc" placeholder="Ex: Levei marmita" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-success w-100">Enviar para o Cofre</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">Progresso e Conquistas</div>
-                            <div class="card-body">
-                                <h5 class="text-center mb-4">Total Guardado: <span id="cofre-total" style="color: var(--neon-green);" class="fw-bold">R$ 0,00</span></h5>
-                                <div id="conquista-1" class="conquista-card bloqueada">
-                                    <div class="conquista-icone"><i class="bi bi-piggy-bank-fill"></i></div>
-                                    <div>
-                                        <div class="fw-bold text-dark">Primeira Economia</div>
-                                        <div class="text-secondary">Guardou o primeiro valor no cofre.</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="assistente">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-robot icon-glow me-2"></i> FinBot — Inteligência de Análise</span>
-                        <span class="badge bg-success font-mono">ONLINE</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="chat-box" id="caixa-chat">
-                            <div class="balao ia">
-                                Olá! O painel foi reajustado para tons pastéis suaves para melhorar o conforto visual. 
-                                
-                                O microfone está conectado abaixo! Clique nas sugestões rápidos ou use o microfone para falar por voz diretamente comigo.
-                            </div>
-                        </div>
-                        
-                        <div class="d-flex gap-2 mb-3 flex-wrap">
-                            <button class="btn btn-sm btn-secondary" style="border: 1px solid var(--neon-cyan); background: white;" onclick="enviarChat('Análise Geral do meu Painel')">📊 Analisar Meu Saldo Real</button>
-                            <button class="btn btn-sm btn-secondary" style="border: 1px solid #ff007f; background: white;" onclick="enviarChat('Dicas para economizar')">💡 Sugestões de Economia</button>
-                        </div>
-
-                        <div class="input-group">
-                            <button class="btn btn-mic" type="button" id="btn-microfone" onclick="alternarVoz()" title="Falar por voz">
-                                <i class="bi bi-mic-fill"></i>
-                            </button>
-                            <input type="text" class="form-control" id="input-chat" placeholder="Digite ou clique no microfone ao lado para falar...">
-                            <button class="btn btn-primary px-4" onclick="processarChatInput()">Enviar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">Histórico de Entradas e Saídas</div>
+            <div class="card-body p-3">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead><tr><th>Tipo</th><th>Descrição</th><th>Categoria</th><th>Data</th><th>Valor</th><th>Ação</th></tr></thead>
+                  <tbody id="tabela-transacoes"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-white text-dark">
-                <div class="modal-header" style="border-bottom: 1px solid rgba(0,0,0,0.1);">
-                    <h5 class="modal-title"><i class="bi bi-shield-lock-fill icon-glow"></i> Acessar Minha Conta</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form onsubmit="event.preventDefault(); bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();">
-                        <div class="mb-3"><label class="form-label">E-mail</label><input type="email" class="form-control" required></div>
-                        <div class="mb-3"><label class="form-label">Senha</label><input type="password" class="form-control" required></div>
-                        <button type="submit" class="btn btn-primary w-100">Entrar</button>
-                    </form>
-                </div>
+    <!-- DÍVIDAS -->
+    <div class="tab-pane fade" id="dividas">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">Adicionar Nova Dívida</div>
+            <div class="card-body">
+              <form id="form-divida">
+                <div class="mb-3"><label class="form-label">Nome da Dívida / Credor</label><input type="text" class="form-control" id="d-nome" placeholder="Ex: Cartão de Crédito" required></div>
+                <div class="mb-3"><label class="form-label">Valor Total (R$)</label><input type="number" class="form-control" id="d-valor" step="0.01" placeholder="0,00" required></div>
+                <div class="mb-3"><label class="form-label">Total de Parcelas</label><input type="number" class="form-control" id="d-parcelas" placeholder="Ex: 12" required></div>
+                <button type="submit" class="btn btn-primary w-100">Salvar Dívida</button>
+              </form>
             </div>
+          </div>
         </div>
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">Controle de Dívidas e Parcelas Pagas</div>
+            <div class="card-body p-3">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead><tr><th>Dívida</th><th>Valor Total</th><th>Progresso Parcelas</th><th>Valor da Parcela</th><th>Ações</th></tr></thead>
+                  <tbody id="tabela-dividas"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- RESUMO -->
+    <div class="tab-pane fade" id="resumo">
+      <div class="row mb-4">
+        <div class="col-md-4"><div class="resumo-card border-success"><h6>Total de Ganhos</h6><h3 style="color:var(--green);" id="resumo-ganhos">R$ 0,00</h3></div></div>
+        <div class="col-md-4"><div class="resumo-card border-danger"><h6>Total de Gastos</h6><h3 style="color:var(--pink);" id="resumo-gastos">R$ 0,00</h3></div></div>
+        <div class="col-md-4"><div class="resumo-card border-primary"><h6>Saldo Atual</h6><h3 style="color:var(--cyan);" id="resumo-saldo">R$ 0,00</h3></div></div>
+      </div>
 
-    <script>
-        let transacoes = JSON.parse(localStorage.getItem('f_transacoes')) || [];
-        let dividas = JSON.parse(localStorage.getItem('f_dividas')) || [];
-        let cofreTotal = parseFloat(localStorage.getItem('f_cofre_total')) || 0;
-        let valorHora = parseFloat(localStorage.getItem('f_valor_hora')) || 0;
-        let meuGrafico = null;
-        let recognition = null;
-        let gravando = false;
+      <!-- MÓDULO DE ANÁLISE PREDITIVA -->
+      <div class="ia-preditiva-card mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="mb-0"><i class="bi bi-graph-up-arrow" style="color:var(--purple);"></i> Previsão Preditiva da IA</h5>
+          <span class="badge-ia">MODELO LOCAL</span>
+        </div>
+        <p id="texto-preditivo" class="mb-0 text-secondary">Registre alguns lançamentos neste mês para que a IA calcule sua projeção de saldo.</p>
+      </div>
 
-        document.addEventListener("DOMContentLoaded", () => {
-            atualizarTudo();
-            document.getElementById('t-data').valueAsDate = new Date();
-            configurarReconhecimentoVoz();
-        });
+      <div class="card">
+        <div class="card-header">Distribuição de Gastos por Categoria</div>
+        <div class="card-body d-flex justify-content-center">
+          <div style="width:100%; max-width:420px;"><div id="graficoApex"></div></div>
+        </div>
+      </div>
+      <div class="text-center">
+        <button class="btn btn-outline-danger btn-sm" onclick="limparBanco()"><i class="bi bi-trash"></i> Apagar Todos os Dados</button>
+      </div>
+    </div>
 
-        // ADICIONAR REGISTRO
-        document.getElementById('form-transacao').addEventListener('submit', (e) => {
-            e.preventDefault();
-            transacoes.push({
-                id: Date.now(),
-                tipo: document.getElementById('t-tipo').value,
-                valor: parseFloat(document.getElementById('t-valor').value),
-                categoria: document.getElementById('t-categoria').value,
-                data: document.getElementById('t-data').value,
-                desc: document.getElementById('t-desc').value
-            });
-            localStorage.setItem('f_transacoes', JSON.stringify(transacoes));
-            document.getElementById('form-transacao').reset();
-            document.getElementById('t-data').valueAsDate = new Date();
-            atualizarTudo();
-        });
+    <!-- VALOR DO TEMPO -->
+    <div class="tab-pane fade" id="preco-horas">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">1. Configurar o Valor da Sua Hora</div>
+            <div class="card-body">
+              <form id="form-valor-hora">
+                <div class="mb-3"><label class="form-label">Seu Salário Mensal Líquido (R$)</label><input type="number" class="form-control" id="h-salario" placeholder="Ex: 4000" required></div>
+                <div class="mb-3"><label class="form-label">Horas trabalhadas por mês</label><input type="number" class="form-control" id="h-horas" placeholder="Ex: 160" required></div>
+                <button type="submit" class="btn btn-primary w-100">Calcular Valor da Hora</button>
+              </form>
+              <div id="resultado-valor-hora" class="mt-3 font-mono text-center"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">2. Calculadora de Impulso de Compra</div>
+            <div class="card-body">
+              <div class="mb-3"><label class="form-label">Preço do Produto (R$)</label><input type="number" class="form-control" id="p-preco" placeholder="Ex: 500"></div>
+              <button class="btn btn-success w-100" onclick="calcularCustoEmHoras()">Analisar Custo em Horas</button>
+              <div id="resultado-custo-produto" class="mt-4 text-center"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        // ADICIONAR DÍVIDA
-        document.getElementById('form-divida').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const total = parseFloat(document.getElementById('d-valor').value);
-            const parcelas = parseInt(document.getElementById('d-parcelas').value);
-            dividas.push({
-                id: Date.now(),
-                nome: document.getElementById('d-nome').value,
-                valor: total,
-                parcelas: parcelas,
-                parcelasPagas: 0,
-                valorParcela: total / parcelas
-            });
-            localStorage.setItem('f_dividas', JSON.stringify(dividas));
-            document.getElementById('form-divida').reset();
-            atualizarTudo();
-        });
+    <!-- COFRE -->
+    <div class="tab-pane fade" id="cofre">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card mb-4">
+            <div class="card-header">Guardar Dinheiro Economizado</div>
+            <div class="card-body">
+              <form id="form-gasto-evitado">
+                <div class="mb-3"><label class="form-label">Valor Poupado (R$)</label><input type="number" class="form-control" id="c-valor" step="0.01" placeholder="0,00" required></div>
+                <div class="mb-3"><label class="form-label">Descrição da Economia</label><input type="text" class="form-control" id="c-desc" placeholder="Ex: Levei marmita" required></div>
+                <button type="submit" class="btn btn-success w-100">Enviar para o Cofre</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">Progresso e Conquistas</div>
+            <div class="card-body">
+              <h5 class="text-center mb-4">Total Guardado: <span id="cofre-total" style="color:var(--green);" class="fw-bold">R$ 0,00</span></h5>
+              <div id="conquista-1" class="conquista-card bloqueada">
+                <div class="conquista-icone"><i class="bi bi-piggy-bank-fill"></i></div>
+                <div><div class="fw-bold" style="color:#fff;">Primeira Economia</div><div class="text-secondary">Guardou o primeiro valor no cofre.</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        // FUNÇÃO DE PAGAR PARCELA COM DESCRIÇÃO EXCLUSIVA
-        function pagarParcela(id) {
-            const divida = dividas.find(d => d.id === id);
-            if (divida && divida.parcelasPagas < divida.parcelas) {
-                const proximaParcelaNum = divida.parcelasPagas + 1;
-                const nomeSugestao = `Parcela ${proximaParcelaNum}/${divida.parcelas} - ${divida.nome}`;
-                
-                const nomeGastoDigitado = prompt("Escreva o nome/descrição para este gasto da parcela:", nomeSugestao);
-                if (nomeGastoDigitado === null) return; 
-                
-                divida.parcelasPagas++;
-                
-                transacoes.push({
-                    id: Date.now(),
-                    tipo: 'gasto',
-                    valor: divida.valorParcela,
-                    categoria: 'Outros',
-                    data: new Date().toISOString().split('T')[0],
-                    desc: nomeGastoDigitado.trim() || nomeSugestao
-                });
-                
-                localStorage.setItem('f_transacoes', JSON.stringify(transacoes));
-                localStorage.setItem('f_dividas', JSON.stringify(dividas));
-                atualizarTudo();
-            }
-        }
+    <!-- ASSISTENTE IA -->
+    <div class="tab-pane fade" id="assistente">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-robot icon-glow me-2"></i> FINBOT — Núcleo de Análise Financeira</span>
+          <span class="status-pill"><span class="dot"></span> ONLINE</span>
+        </div>
+        <div class="card-body">
+          <div class="chat-box" id="caixa-chat">
+            <div class="balao ia">🤖 Sistema reinicializado no modo HUD Cyberpunk.
 
-        function deletarTransacao(id) { transacoes = transacoes.filter(t => t.id !== id); localStorage.setItem('f_transacoes', JSON.stringify(transacoes)); atualizarTudo(); }
-        function deletarDivida(id) { dividas = dividas.filter(d => d.id !== id); localStorage.setItem('f_dividas', JSON.stringify(dividas)); atualizarTudo(); }
+Agora você pode lançar gastos e ganhos digitando em linguagem natural. Experimente algo como:
+"Gastei 50 reais com Uber hoje" ou "Recebi 3500 de salário ontem".</div>
+          </div>
 
-        // RECONHECIMENTO DE VOZ (MICROFONE)
-        function configurarReconhecimentoVoz() {
-            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                recognition = new SpeechRecognition();
-                recognition.lang = 'pt-BR';
-                recognition.interimResults = false;
+          <div class="d-flex gap-2 mb-3 flex-wrap">
+            <button class="btn btn-sm btn-secondary" onclick="enviarChat('Análise Geral do meu Painel')">📊 Analisar Meu Saldo Real</button>
+            <button class="btn btn-sm btn-secondary" onclick="enviarChat('Dicas para economizar')">💡 Sugestões de Economia</button>
+            <button class="btn btn-sm btn-secondary" onclick="enviarChat('Qual a previsão do meu mês?')">🔮 Previsão do Mês</button>
+          </div>
 
-                recognition.onstart = () => {
-                    gravando = true;
-                    document.getElementById('btn-microfone').classList.add('gravando');
-                };
+          <div class="input-group">
+            <button class="btn btn-mic" type="button" id="btn-microfone" onclick="alternarVoz()" title="Falar por voz"><i class="bi bi-mic-fill"></i></button>
+            <input type="text" class="form-control" id="input-chat" placeholder="Digite um lançamento em linguagem natural ou uma pergunta...">
+            <button class="btn btn-primary px-4" onclick="processarChatInput()">Enviar</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-                recognition.onend = () => {
-                    gravando = false;
-                    document.getElementById('btn-microfone').classList.remove('gravando');
-                };
+  </div>
+</div>
 
-                recognition.onresult = (event) => {
-                    const resultado = event.results[0][0].transcript;
-                    document.getElementById('input-chat').value = resultado;
-                };
-            }
-        }
+<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-shield-lock-fill icon-glow"></i> Acessar Minha Conta</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
 
-        function alternarVoz() {
-            if (!recognition) {
-                alert("O reconhecimento de voz não é suportado no seu navegador.");
-                return;
-            }
-            if (gravando) { recognition.stop(); } else { recognition.start(); }
-        }
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab-btn active" id="btn-aba-login" onclick="alternarAbaAuth('login')">Entrar</button>
+          <button type="button" class="auth-tab-btn" id="btn-aba-cadastro" onclick="alternarAbaAuth('cadastro')">Criar Conta</button>
+        </div>
 
-        // CHAT DE INTELIGÊNCIA
-        function enviarChat(msg) {
-            const caixa = document.getElementById('caixa-chat');
-            
-            const bUser = document.createElement('div');
-            bUser.className = 'balao user';
-            bUser.innerText = msg;
-            caixa.appendChild(bUser);
-            caixa.scrollTop = caixa.scrollHeight;
+        <div id="auth-erro" class="auth-erro"></div>
+        <div id="auth-sucesso" class="auth-sucesso"></div>
 
-            setTimeout(() => {
-                const bIA = document.createElement('div');
-                bIA.className = 'balao ia';
+        <!-- FORM LOGIN -->
+        <form id="form-login">
+          <div class="mb-3"><label class="form-label">E-mail</label><input type="email" class="form-control" id="login-email" required></div>
+          <div class="mb-3"><label class="form-label">Senha</label><input type="password" class="form-control" id="login-senha" required></div>
+          <button type="submit" class="btn btn-primary w-100">Entrar</button>
+        </form>
 
-                let tGanhos = 0, tGastos = 0;
-                transacoes.forEach(t => { t.tipo === 'ganho' ? tGanhos += t.valor : tGastos += t.valor; });
-                let saldoAtual = tGanhos - tGastos;
+        <!-- FORM CADASTRO -->
+        <form id="form-cadastro" style="display:none;">
+          <div class="mb-3"><label class="form-label">Nome</label><input type="text" class="form-control" id="cad-nome" required></div>
+          <div class="mb-3"><label class="form-label">E-mail</label><input type="email" class="form-control" id="cad-email" required></div>
+          <div class="mb-3"><label class="form-label">Senha</label><input type="password" class="form-control" id="cad-senha" minlength="4" required></div>
+          <button type="submit" class="btn btn-success w-100">Criar Conta</button>
+        </form>
 
-                if (msg.toLowerCase().includes('análise') || msg.toLowerCase().includes('saldo') || msg.toLowerCase().includes('painel')) {
-                    bIA.innerText = `🤖 FinBot Analisou os Seus Dados:\n\n• Ganhos Totais: R$ ${tGanhos.toFixed(2)}\n• Gastos Totais: R$ ${tGastos.toFixed(2)}\n• Saldo Livre: R$ ${saldoAtual.toFixed(2)}\n\n${saldoAtual < 0 ? '⚠️ Atenção: O seu saldo atual está negativo.' : '✅ Excelente! O seu saldo está positivo!'}`;
-                } else if (msg.toLowerCase().includes('economizar') || msg.toLowerCase().includes('dica')) {
-                    bIA.innerText = `🤖 Dicas Rápidas de Economia Inteligente:\n\n1. Ative a calculadora na aba "O Valor do Meu Tempo" para evitar compras por impulso.\n2. Lembre-se de dar nomes claros para suas parcelas pagas no histórico.`;
-                } else {
-                    bIA.innerText = `🤖 Entendido! Li o seu banco de dados. Atualmente o seu saldo livre em conta é de R$ ${saldoAtual.toFixed(2)}. Qual dado gostaria de analisar agora por voz?`;
-                }
+      </div>
+    </div>
+  </div>
+</div>
 
-                caixa.appendChild(bIA);
-                caixa.scrollTop = caixa.scrollHeight;
-            }, 600);
-        }
+<!-- MODAL DE CONFIRMAÇÃO — COMPRA / DÍVIDA DE ALTO VALOR (Robô de Alertas) -->
+<div class="modal fade" id="modalRoboConfirma" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center pt-4">
+        <div class="modal-robo-icone"><i class="bi bi-robot"></i></div>
+        <h5 class="mb-2" style="color:#fff;">🤖 Antes de confirmar...</h5>
+        <p id="modalRoboTexto" class="text-secondary mb-4">Este lançamento é de valor alto e pode comprometer seu saldo por algum tempo.</p>
+        <div class="d-flex gap-2">
+          <button class="btn btn-secondary w-100" id="btnRoboCancelar">Cancelar</button>
+          <button class="btn btn-danger w-100" id="btnRoboConfirmar">Confirmar mesmo assim</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-        function processarChatInput() {
-            const input = document.getElementById('input-chat');
-            if(input.value.trim() !== "") {
-                enviarChat(input.value);
-                input.value = "";
-            }
-        }
+<!-- WIDGET FLUTUANTE — ROBÔ DE ALERTAS DE SALDO -->
+<div id="robo-alerta">
+  <button class="robo-fechar" onclick="fecharAlertaRobo()"><i class="bi bi-x-lg"></i></button>
+  <div class="robo-icone-wrap"><i class="bi bi-robot"></i></div>
+  <div class="robo-texto">
+    <div class="robo-titulo" id="robo-alerta-titulo">Alerta</div>
+    <div id="robo-alerta-texto"></div>
+  </div>
+</div>
 
-        // RENDERIZAR TELA ATUALIZADA
-        function atualizarTudo() {
-            const tBody = document.getElementById('tabela-transacoes');
-            tBody.innerHTML = transacoes.length === 0 ? '<tr><td colspan="6" class="text-center text-muted">Nenhum ganho ou gasto registrado ainda.</td></tr>' : '';
-            transacoes.forEach(t => {
-                tBody.innerHTML += `<tr>
-                    <td><span class="badge ${t.tipo === 'ganho' ? 'bg-success' : 'bg-danger'}">${t.tipo.toUpperCase()}</span></td>
-                    <td class="fw-medium">${t.desc}</td>
-                    <td>${t.categoria}</td>
-                    <td>${t.data.split('-').reverse().join('/')}</td>
-                    <td class="${t.tipo === 'ganho' ? 'text-success' : 'text-danger'} fw-bold">R$ ${t.valor.toFixed(2)}</td>
-                    <td><button class="btn btn-sm btn-outline-danger p-1" onclick="deletarTransacao(${t.id})"><i class="bi bi-trash"></i></button></td>
-                </tr>`;
-            });
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-            const dBody = document.getElementById('tabela-dividas');
-            dBody.innerHTML = dividas.length === 0 ? '<tr><td colspan="5" class="text-center text-muted">Nenhuma dívida salva.</td></tr>' : '';
-            dividas.forEach(d => {
-                const quitada = d.parcelasPagas >= d.parcelas;
-                dBody.innerHTML += `<tr>
-                    <td class="fw-medium">${d.nome}</td>
-                    <td>R$ ${d.valor.toFixed(2)}</td>
-                    <td><span class="badge ${quitada ? 'bg-success' : 'bg-warning text-dark'}">${d.parcelasPagas} de ${d.parcelas} pagas</span></td>
-                    <td style="color: var(--neon-pink); font-weight: 600;">R$ ${d.valorParcela.toFixed(2)}</td>
-                    <td>
-                        ${quitada ? '<span class="text-success fw-bold"><i class="bi bi-check-all"></i> Quitado</span>' : 
-                        `<button class="btn btn-sm btn-success p-1 me-1" onclick="pagarParcela(${d.id})"><i class="bi bi-check-circle"></i> Pagar Parcela</button>`}
-                        <button class="btn btn-sm btn-outline-danger p-1" onclick="deletarDivida(${d.id})"><i class="bi bi-trash"></i></button>
-                    </td>
-                </tr>`;
-            });
-
-            let ganhos = 0, gastos = 0;
-            transacoes.forEach(t => { t.tipo === 'ganho' ? ganhos += t.valor : gastos += t.valor; });
-            let saldo = ganhos - gastos;
-
-            document.getElementById('resumo-ganhos').innerText = `R$ ${ganhos.toFixed(2)}`;
-            document.getElementById('resumo-gastos').innerText = `R$ ${gastos.toFixed(2)}`;
-            document.getElementById('resumo-saldo').innerText = `R$ ${saldo.toFixed(2)}`;
-            document.getElementById('resumo-saldo').style.color = saldo < 0 ? "var(--neon-pink)" : "var(--neon-cyan)";
-            document.getElementById('cofre-total').innerText = `R$ ${cofreTotal.toFixed(2)}`;
-            if(cofreTotal > 0) document.getElementById('conquista-1').classList.remove('bloqueada');
-
-            renderizarGrafico();
-        }
-
-        // GRÁFICO REAJUSTADO PARA TEMA CLARO
-        function renderizarGrafico() {
-            const ctx = document.getElementById('meuGrafico').getContext('2d');
-            let cats = { Alimentação: 0, Moradia: 0, Lazer: 0, Outros: 0 };
-            transacoes.forEach(t => { if(t.tipo === 'gasto' && cats[t.categoria] !== undefined) cats[t.categoria] += t.valor; });
-            if(meuGrafico) meuGrafico.destroy();
-            meuGrafico = new Chart(ctx, {
-                type: 'doughnut',
-                data: { 
-                    labels: Object.keys(cats), 
-                    datasets: [{ 
-                        data: Object.values(cats), 
-                        backgroundColor: ['#ffaa00', '#00b4d8', '#ff007f', '#7209b7'],
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
-                    }] 
-                },
-                options: { 
-                    responsive: true, 
-                    plugins: { 
-                        legend: { position: 'bottom', labels: { color: '#475569' } } 
-                    } 
-                }
-            });
-        }
-
-        document.getElementById('form-valor-hora').addEventListener('submit', (e) => {
-            e.preventDefault();
-            valorHora = parseFloat(document.getElementById('h-salario').value) / parseFloat(document.getElementById('h-horas').value);
-            localStorage.setItem('f_valor_hora', valorHora);
-            document.getElementById('resultado-valor-hora').innerHTML = `<span style="color: var(--neon-green);" class="fw-bold">A sua hora de trabalho vale: R$ ${valorHora.toFixed(2)}</span>`;
-        });
-
-        function calcularCustoEmHoras() {
-            const preco = parseFloat(document.getElementById('p-preco').value);
-            if(valorHora <= 0) { alert('Configure a sua hora primeiro no Passo 1.'); return; }
-            document.getElementById('resultado-custo-produto').innerHTML = `<div class="alert alert-light text-dark" style="border: 1px solid var(--neon-cyan)">Isto equivale a <strong>${(preco / valorHora).toFixed(1)} horas</strong> reais de esforço do seu trabalho.</div>`;
-        }
-
-        document.getElementById('form-gasto-evitado').addEventListener('submit', (e) => {
-            e.preventDefault();
-            cofreTotal += parseFloat(document.getElementById('c-valor').value);
-            localStorage.setItem('f_cofre_total', cofreTotal);
-            document.getElementById('form-gasto-evitado').reset();
-            atualizarTudo();
-        });
-
-        function limparBanco() { if(confirm("Deseja mesmo apagar todo o histórico da aplicação?")) { localStorage.clear(); location.reload(); } }
-    /* Correção Rápida Mobile */
-@media (max-width: 768px) {
-    .nav-tabs { 
-        display: flex !important; 
-        flex-wrap: nowrap !important; 
-        overflow-x: auto !important; 
-        -webkit-overflow-scrolling: touch; 
-    }
-    .nav-item { flex: 0 0 auto; }
+<script>
+/* ==================================================================
+   FORMATAÇÃO DE VALORES — só o saldo mostra centavos (máx. 2 dígitos);
+   os demais valores aparecem arredondados, sem casas decimais.
+   ================================================================== */
+function formatarMoeda(valor, comCentavos = false) {
+  const v = valor || 0;
+  if (comCentavos) {
+    return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
 }
-    </script>
+
+/* ==================================================================
+   ESTADO GLOBAL / PERSISTÊNCIA (localStorage)
+   ================================================================== */
+let transacoes = JSON.parse(localStorage.getItem('f_transacoes')) || [];
+let dividas   = JSON.parse(localStorage.getItem('f_dividas'))   || [];
+let cofreTotal = parseFloat(localStorage.getItem('f_cofre_total')) || 0;
+let valorHora  = parseFloat(localStorage.getItem('f_valor_hora'))  || 0;
+let graficoApex = null;
+let recognition = null;
+let gravando = false;
+
+document.addEventListener("DOMContentLoaded", () => {
+  atualizarTudo();
+  document.getElementById('t-data').valueAsDate = new Date();
+  configurarReconhecimentoVoz();
+  iniciarParticulas();
+  inicializarAuth();
+});
+
+/* ==================================================================
+   CRUD — TRANSAÇÕES, DÍVIDAS E COFRE (mesma lógica da versão original)
+   ================================================================== */
+document.getElementById('form-transacao').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const novaTransacao = {
+    id: Date.now(),
+    tipo: document.getElementById('t-tipo').value,
+    valor: parseFloat(document.getElementById('t-valor').value),
+    categoria: document.getElementById('t-categoria').value,
+    data: document.getElementById('t-data').value,
+    desc: document.getElementById('t-desc').value
+  };
+
+  const finalizarLancamento = () => {
+    transacoes.push(novaTransacao);
+    salvarTransacoes();
+    document.getElementById('form-transacao').reset();
+    document.getElementById('t-data').valueAsDate = new Date();
+    atualizarTudo();
+  };
+
+  // 🤖 Antes de gravar um gasto alto, o robô pergunta se é realmente necessário
+  if (novaTransacao.tipo === 'gasto' && ehCompraDeAltoValor(novaTransacao.valor)) {
+    const saldoAtual = calcularSaldoAtual();
+    const textoAlerta = `Esse gasto de <strong>${formatarMoeda(novaTransacao.valor)}</strong> é considerado alto para o seu momento financeiro atual (saldo: ${formatarMoeda(saldoAtual, true)}). Isso pode comprometer seu orçamento nos próximos dias. Tem certeza que deseja continuar?`;
+    confirmarComRobo(textoAlerta, finalizarLancamento);
+  } else {
+    finalizarLancamento();
+  }
+});
+
+document.getElementById('form-divida').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const total = parseFloat(document.getElementById('d-valor').value);
+  const parcelas = parseInt(document.getElementById('d-parcelas').value);
+  const valorParcela = total / parcelas;
+  const nome = document.getElementById('d-nome').value;
+
+  const finalizarDivida = () => {
+    dividas.push({ id: Date.now(), nome, valor: total, parcelas, parcelasPagas: 0, valorParcela });
+    localStorage.setItem('f_dividas', JSON.stringify(dividas));
+    document.getElementById('form-divida').reset();
+    atualizarTudo();
+  };
+
+  // 🤖 O robô avisa quando uma nova dívida vai comprometer a renda por vários meses
+  const rendaMensal = calcularRendaMediaMensal();
+  const percentualComprometido = rendaMensal > 0 ? (valorParcela / rendaMensal) * 100 : 0;
+  if (percentualComprometido >= 20 || parcelas >= 6) {
+    const textoAlerta = `A dívida "<strong>${nome}</strong>" vai gerar parcelas de <strong>${formatarMoeda(valorParcela)}</strong> por <strong>${parcelas} meses</strong>${rendaMensal > 0 ? `, comprometendo cerca de <strong>${percentualComprometido.toFixed(0)}%</strong> da sua renda mensal média` : ''}. Isso vai afetar seu orçamento por um bom tempo. Deseja continuar mesmo assim?`;
+    confirmarComRobo(textoAlerta, finalizarDivida);
+  } else {
+    finalizarDivida();
+  }
+});
+
+function pagarParcela(id) {
+  const divida = dividas.find(d => d.id === id);
+  if (divida && divida.parcelasPagas < divida.parcelas) {
+    const proximaParcelaNum = divida.parcelasPagas + 1;
+    const nomeSugestao = `Parcela ${proximaParcelaNum}/${divida.parcelas} - ${divida.nome}`;
+    const nomeGastoDigitado = prompt("Escreva o nome/descrição para este gasto da parcela:", nomeSugestao);
+    if (nomeGastoDigitado === null) return;
+    divida.parcelasPagas++;
+    transacoes.push({
+      id: Date.now(), tipo: 'gasto', valor: divida.valorParcela, categoria: 'Outros',
+      data: new Date().toISOString().split('T')[0], desc: nomeGastoDigitado.trim() || nomeSugestao
+    });
+    salvarTransacoes();
+    localStorage.setItem('f_dividas', JSON.stringify(dividas));
+    atualizarTudo();
+  }
+}
+
+function deletarTransacao(id){ transacoes = transacoes.filter(t => t.id !== id); salvarTransacoes(); atualizarTudo(); }
+function deletarDivida(id){ dividas = dividas.filter(d => d.id !== id); localStorage.setItem('f_dividas', JSON.stringify(dividas)); atualizarTudo(); }
+function salvarTransacoes(){ localStorage.setItem('f_transacoes', JSON.stringify(transacoes)); }
+
+/* ==================================================================
+   RECONHECIMENTO DE VOZ (Web Speech API)
+   ================================================================== */
+function configurarReconhecimentoVoz() {
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'pt-BR';
+    recognition.interimResults = false;
+    recognition.onstart = () => { gravando = true; document.getElementById('btn-microfone').classList.add('gravando'); };
+    recognition.onend   = () => { gravando = false; document.getElementById('btn-microfone').classList.remove('gravando'); };
+    recognition.onresult = (event) => { document.getElementById('input-chat').value = event.results[0][0].transcript; };
+  }
+}
+function alternarVoz() {
+  if (!recognition) { alert("O reconhecimento de voz não é suportado no seu navegador."); return; }
+  gravando ? recognition.stop() : recognition.start();
+}
+
+/* ==================================================================
+   🧠 MÓDULO DE IA #1 — PARSING DE LINGUAGEM NATURAL (NLP)
+   ------------------------------------------------------------------
+   Analisa frases como "Gastei 50 reais com Uber hoje" ou
+   "Recebi 3500 de salário ontem" e extrai automaticamente:
+   valor, tipo (ganho/gasto), categoria provável, descrição e data,
+   lançando o registro direto no localStorage sem uso do formulário.
+   ================================================================== */
+const PALAVRAS_GASTO = ['gastei','paguei','comprei','gasto de','saiu','desembolsei'];
+const PALAVRAS_GANHO = ['recebi','ganhei','entrou','caiu','faturei','vendi'];
+
+// Dicionário de palavras-chave -> categoria provável
+const MAPA_CATEGORIAS = {
+  uber: 'Transporte', '99': 'Transporte', taxi: 'Transporte', gasolina: 'Transporte', combustível: 'Transporte', onibus: 'Transporte', ônibus: 'Transporte', metro: 'Transporte', metrô: 'Transporte',
+  mercado: 'Alimentação', ifood: 'Alimentação', restaurante: 'Alimentação', lanche: 'Alimentação', supermercado: 'Alimentação', padaria: 'Alimentação', almoço: 'Alimentação', jantar: 'Alimentação',
+  aluguel: 'Moradia', luz: 'Moradia', água: 'Moradia', agua: 'Moradia', internet: 'Moradia', condominio: 'Moradia', condomínio: 'Moradia', conta: 'Moradia',
+  cinema: 'Lazer', show: 'Lazer', viagem: 'Lazer', jogo: 'Lazer', streaming: 'Lazer', festa: 'Lazer',
+  salário: 'Salário', salario: 'Salário', pagamento: 'Salário', freela: 'Salário', freelance: 'Salário', cliente: 'Salário'
+};
+
+/**
+ * Tenta interpretar uma frase em linguagem natural como um lançamento financeiro.
+ * Retorna um objeto { tipo, valor, categoria, desc, data } ou null se não
+ * conseguir identificar um valor numérico válido na frase.
+ */
+function parseLancamentoNLP(textoOriginal) {
+  const texto = textoOriginal.toLowerCase().trim();
+
+  // 1. Captura o valor numérico (aceita "50", "50,00", "50.00", "R$ 50")
+  const matchValor = texto.match(/(\d+(?:[.,]\d{1,2})?)/);
+  if (!matchValor) return null;
+  const valor = parseFloat(matchValor[1].replace(',', '.'));
+  if (isNaN(valor) || valor <= 0) return null;
+
+  // 2. Identifica o tipo (ganho ou gasto) por palavras-chave
+  let tipo = null;
+  if (PALAVRAS_GASTO.some(p => texto.includes(p))) tipo = 'gasto';
+  if (PALAVRAS_GANHO.some(p => texto.includes(p))) tipo = 'ganho';
+  if (!tipo) return null; // sem verbo de ação reconhecido, não é um lançamento
+
+  // 3. Identifica a categoria por palavra-chave presente na frase
+  let categoria = tipo === 'ganho' ? 'Salário' : 'Outros';
+  for (const chave in MAPA_CATEGORIAS) {
+    if (texto.includes(chave)) { categoria = MAPA_CATEGORIAS[chave]; break; }
+  }
+
+  // 4. Identifica a data relativa ("hoje", "ontem", "anteontem")
+  let data = new Date();
+  if (texto.includes('ontem')) data.setDate(data.getDate() - 1);
+  else if (texto.includes('anteontem')) data.setDate(data.getDate() - 2);
+  const dataISO = data.toISOString().split('T')[0];
+
+  // 5. Monta uma descrição legível a partir da própria frase
+  let desc = textoOriginal.replace(/hoje|ontem|anteontem/gi, '').trim();
+  desc = desc.charAt(0).toUpperCase() + desc.slice(1);
+
+  return { tipo, valor, categoria, desc, data: dataISO };
+}
+
+/* ==================================================================
+   🧠 MÓDULO DE IA #2 — ESTRUTURA PARA INTEGRAÇÃO COM LLM REAL
+   ------------------------------------------------------------------
+   Função pronta para conectar a uma API de IA (Gemini, Claude, GPT etc).
+   Basta preencher a URL do endpoint e a chave de API em um backend
+   próprio (NUNCA exponha a chave de API diretamente no frontend).
+   Hoje ela não é chamada automaticamente — está aqui como estrutura
+   para quando você quiser plugar uma IA generativa real ao FinBot.
+   ================================================================== */
+/*
+async function enviarParaIA(historicoDados, mensagemUsuario) {
+  // historicoDados: { transacoes, dividas, cofreTotal, valorHora }
+  // mensagemUsuario: texto digitado ou falado pelo usuário
+
+  const resposta = await fetch("https://SEU-BACKEND-SEGURO.com/api/finbot", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "gemini-1.5-pro", // ou "claude-sonnet-4-6", conforme o provedor
+      contexto: historicoDados,
+      mensagem: mensagemUsuario
+    })
+  });
+
+  if (!resposta.ok) throw new Error("Falha ao consultar a IA financeira.");
+  const dados = await resposta.json();
+  return dados.textoResposta; // resposta gerada pelo modelo, pronta para exibir no chat
+}
+*/
+
+/* ==================================================================
+   🧠 MÓDULO DE IA #3 — ANÁLISE PREDITIVA DE SALDO
+   ------------------------------------------------------------------
+   Calcula a média diária de gastos do mês corrente e projeta se o
+   saldo terminará positivo ou negativo caso o ritmo se mantenha.
+   ================================================================== */
+function calcularPrevisaoPreditiva() {
+  const hoje = new Date();
+  const diaAtual = hoje.getDate();
+  const diasNoMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0).getDate();
+
+  const transacoesDoMes = transacoes.filter(t => {
+    const d = new Date(t.data + 'T00:00:00');
+    return d.getMonth() === hoje.getMonth() && d.getFullYear() === hoje.getFullYear();
+  });
+
+  const ganhosMes = transacoesDoMes.filter(t => t.tipo === 'ganho').reduce((s, t) => s + t.valor, 0);
+  const gastosMes = transacoesDoMes.filter(t => t.tipo === 'gasto').reduce((s, t) => s + t.valor, 0);
+
+  if (transacoesDoMes.length === 0) {
+    return { texto: "Registre alguns lançamentos neste mês para que a IA calcule sua projeção de saldo.", positivo: null };
+  }
+
+  const mediaDiariaGasto = gastosMes / diaAtual;
+  const gastoProjetadoMes = mediaDiariaGasto * diasNoMes;
+  const saldoProjetado = ganhosMes - gastoProjetadoMes;
+
+  const texto = saldoProjetado >= 0
+    ? `📈 Mantendo o ritmo atual de ${formatarMoeda(mediaDiariaGasto)}/dia em gastos, a IA projeta que você fechará o mês com saldo positivo de aproximadamente ${formatarMoeda(saldoProjetado)}.`
+    : `📉 Alerta: mantendo o ritmo atual de ${formatarMoeda(mediaDiariaGasto)}/dia em gastos, a IA projeta um saldo negativo de aproximadamente ${formatarMoeda(Math.abs(saldoProjetado))} até o fim do mês.`;
+
+  return { texto, positivo: saldoProjetado >= 0, saldoProjetado, mediaDiariaGasto };
+}
+
+function atualizarPainelPreditivo() {
+  const previsao = calcularPrevisaoPreditiva();
+  document.getElementById('texto-preditivo').innerText = previsao.texto;
+}
+
+/* ==================================================================
+   CHAT / FINBOT — agora com parsing NLP integrado
+   ================================================================== */
+function enviarChat(msg) {
+  const caixa = document.getElementById('caixa-chat');
+
+  const bUser = document.createElement('div');
+  bUser.className = 'balao user';
+  bUser.innerText = msg;
+  caixa.appendChild(bUser);
+  caixa.scrollTop = caixa.scrollHeight;
+
+  setTimeout(() => {
+    const bIA = document.createElement('div');
+    bIA.className = 'balao ia';
+
+    // 1. Primeiro tenta interpretar a mensagem como um lançamento em linguagem natural
+    const lancamento = parseLancamentoNLP(msg);
+    if (lancamento) {
+      transacoes.push({
+        id: Date.now(),
+        tipo: lancamento.tipo,
+        valor: lancamento.valor,
+        categoria: lancamento.categoria,
+        data: lancamento.data,
+        desc: lancamento.desc
+      });
+      salvarTransacoes();
+      atualizarTudo();
+
+      bIA.innerText = `✅ Lançamento registrado automaticamente pela IA:\n\n• Tipo: ${lancamento.tipo === 'ganho' ? 'Ganho' : 'Gasto'}\n• Valor: ${formatarMoeda(lancamento.valor)}\n• Categoria: ${lancamento.categoria}\n• Data: ${lancamento.data.split('-').reverse().join('/')}\n\nJá atualizei sua tabela e seu resumo geral.`;
+      caixa.appendChild(bIA);
+      caixa.scrollTop = caixa.scrollHeight;
+      return;
+    }
+
+    // 2. Caso não seja um lançamento, cai nas respostas analíticas
+    let tGanhos = 0, tGastos = 0;
+    transacoes.forEach(t => { t.tipo === 'ganho' ? tGanhos += t.valor : tGastos += t.valor; });
+    let saldoAtual = tGanhos - tGastos;
+    const msgLower = msg.toLowerCase();
+
+    if (msgLower.includes('previsão') || msgLower.includes('previsao') || msgLower.includes('mês') || msgLower.includes('mes')) {
+      const previsao = calcularPrevisaoPreditiva();
+      bIA.classList.add('preditiva');
+      bIA.innerText = `🔮 ${previsao.texto}`;
+    } else if (msgLower.includes('análise') || msgLower.includes('analise') || msgLower.includes('saldo') || msgLower.includes('painel')) {
+      bIA.innerText = `🤖 Análise do seu painel:\n\n• Ganhos Totais: ${formatarMoeda(tGanhos)}\n• Gastos Totais: ${formatarMoeda(tGastos)}\n• Saldo Livre: ${formatarMoeda(saldoAtual, true)}\n\n${saldoAtual < 0 ? '⚠️ Atenção: o seu saldo atual está negativo.' : '✅ Excelente! O seu saldo está positivo.'}`;
+    } else if (msgLower.includes('economizar') || msgLower.includes('dica')) {
+      bIA.innerText = `🤖 Dicas rápidas de economia:\n\n1. Use a calculadora em "O Valor do Meu Tempo" antes de compras por impulso.\n2. Dê nomes claros às parcelas pagas no histórico.\n3. Acompanhe a Previsão Preditiva para ajustar o ritmo de gastos ainda no meio do mês.`;
+    } else {
+      bIA.innerText = `🤖 Entendido. Seu saldo livre atual em conta é de ${formatarMoeda(saldoAtual, true)}. Você também pode me dizer algo como "gastei 30 reais com ifood hoje" que eu registro automaticamente.`;
+    }
+
+    caixa.appendChild(bIA);
+    caixa.scrollTop = caixa.scrollHeight;
+  }, 500);
+}
+
+function processarChatInput() {
+  const input = document.getElementById('input-chat');
+  if (input.value.trim() !== "") { enviarChat(input.value); input.value = ""; }
+}
+
+/* ==================================================================
+   RENDERIZAÇÃO GERAL DA TELA
+   ================================================================== */
+function atualizarTudo() {
+  const tBody = document.getElementById('tabela-transacoes');
+  tBody.innerHTML = transacoes.length === 0 ? '<tr><td colspan="6" class="text-center text-secondary">Nenhum ganho ou gasto registrado ainda.</td></tr>' : '';
+  transacoes.slice().reverse().forEach(t => {
+    tBody.innerHTML += `<tr>
+      <td><span class="badge" style="background:${t.tipo === 'ganho' ? 'rgba(0,255,171,.15)' : 'rgba(255,45,120,.15)'}; color:${t.tipo === 'ganho' ? 'var(--green)' : 'var(--pink)'}; border:1px solid ${t.tipo === 'ganho' ? 'var(--green)' : 'var(--pink)'};">${t.tipo.toUpperCase()}</span></td>
+      <td class="fw-medium">${t.desc}</td>
+      <td>${t.categoria}</td>
+      <td>${t.data.split('-').reverse().join('/')}</td>
+      <td class="fw-bold" style="color:${t.tipo === 'ganho' ? 'var(--green)' : 'var(--pink)'};">${formatarMoeda(t.valor)}</td>
+      <td><button class="btn btn-sm btn-outline-danger p-1" onclick="deletarTransacao(${t.id})"><i class="bi bi-trash"></i></button></td>
+    </tr>`;
+  });
+
+  const dBody = document.getElementById('tabela-dividas');
+  dBody.innerHTML = dividas.length === 0 ? '<tr><td colspan="5" class="text-center text-secondary">Nenhuma dívida salva.</td></tr>' : '';
+  dividas.forEach(d => {
+    const quitada = d.parcelasPagas >= d.parcelas;
+    dBody.innerHTML += `<tr>
+      <td class="fw-medium">${d.nome}</td>
+      <td>${formatarMoeda(d.valor)}</td>
+      <td><span class="badge" style="background:${quitada ? 'rgba(0,255,171,.15)' : 'rgba(255,176,32,.15)'}; color:${quitada ? 'var(--green)' : 'var(--amber)'}; border:1px solid ${quitada ? 'var(--green)' : 'var(--amber)'};">${d.parcelasPagas} de ${d.parcelas} pagas</span></td>
+      <td style="color:var(--pink); font-weight:600;">${formatarMoeda(d.valorParcela)}</td>
+      <td>
+        ${quitada ? '<span style="color:var(--green);" class="fw-bold"><i class="bi bi-check-all"></i> Quitado</span>' :
+        `<button class="btn btn-sm btn-success p-1 me-1" onclick="pagarParcela(${d.id})"><i class="bi bi-check-circle"></i> Pagar Parcela</button>`}
+        <button class="btn btn-sm btn-outline-danger p-1" onclick="deletarDivida(${d.id})"><i class="bi bi-trash"></i></button>
+      </td>
+    </tr>`;
+  });
+
+  let ganhos = 0, gastos = 0;
+  transacoes.forEach(t => { t.tipo === 'ganho' ? ganhos += t.valor : gastos += t.valor; });
+  let saldo = ganhos - gastos;
+
+  document.getElementById('resumo-ganhos').innerText = formatarMoeda(ganhos);
+  document.getElementById('resumo-gastos').innerText = formatarMoeda(gastos);
+  document.getElementById('resumo-saldo').innerText = formatarMoeda(saldo, true);
+  document.getElementById('resumo-saldo').style.color = saldo < 0 ? "var(--pink)" : "var(--cyan)";
+  document.getElementById('cofre-total').innerText = formatarMoeda(cofreTotal);
+  if (cofreTotal > 0) document.getElementById('conquista-1').classList.remove('bloqueada');
+
+  atualizarPainelPreditivo();
+  renderizarGrafico();
+  verificarAlertasDeSaldo();
+}
+
+/* ==================================================================
+   GRÁFICO — ApexCharts (Donut com gradiente e tooltip cyberpunk)
+   ================================================================== */
+function renderizarGrafico() {
+  let cats = { Alimentação: 0, Moradia: 0, Transporte: 0, Lazer: 0, Outros: 0 };
+  transacoes.forEach(t => { if (t.tipo === 'gasto' && cats[t.categoria] !== undefined) cats[t.categoria] += t.valor; });
+
+  const labels = Object.keys(cats);
+  const dados = Object.values(cats);
+
+  const options = {
+    chart: { type: 'donut', height: 340, background: 'transparent', foreColor: '#e7f1ff' },
+    series: dados,
+    labels: labels,
+    colors: ['#00f0ff', '#ff2e88', '#ffb800', '#b026ff', '#00ff9d'],
+    fill: {
+      type: 'gradient',
+      gradient: { shade: 'dark', type: 'diagonal1', shadeIntensity: 0.5, gradientToColors: ['#0072ff', '#c400ff', '#ff7a00', '#6a00c4', '#00b46e'], opacityFrom: 0.95, opacityTo: 0.75 }
+    },
+    stroke: { colors: ['#090d16'], width: 3 },
+    legend: { position: 'bottom', labels: { colors: '#7d8db3' }, markers: { radius: 4 } },
+    dataLabels: { style: { colors: ['#04101a'], fontWeight: 700 } },
+    tooltip: {
+      theme: 'dark',
+      y: { formatter: (val) => formatarMoeda(val) },
+      style: { fontFamily: 'JetBrains Mono, monospace' }
+    },
+    plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'Total Gasto', color: '#7d8db3', formatter: (w) => formatarMoeda(w.globals.seriesTotals.reduce((a,b)=>a+b,0)) } } } } }
+  };
+
+  if (graficoApex) { graficoApex.updateOptions(options); }
+  else { graficoApex = new ApexCharts(document.querySelector("#graficoApex"), options); graficoApex.render(); }
+}
+
+/* ==================================================================
+   VALOR DO TEMPO / IMPULSO DE COMPRA
+   ================================================================== */
+document.getElementById('form-valor-hora').addEventListener('submit', (e) => {
+  e.preventDefault();
+  valorHora = parseFloat(document.getElementById('h-salario').value) / parseFloat(document.getElementById('h-horas').value);
+  localStorage.setItem('f_valor_hora', valorHora);
+  document.getElementById('resultado-valor-hora').innerHTML = `<span style="color:var(--green);" class="fw-bold">A sua hora de trabalho vale: ${formatarMoeda(valorHora)}</span>`;
+});
+
+function calcularCustoEmHoras() {
+  const preco = parseFloat(document.getElementById('p-preco').value);
+  if (valorHora <= 0) { alert('Configure a sua hora primeiro no Passo 1.'); return; }
+  document.getElementById('resultado-custo-produto').innerHTML = `<div class="alert" style="background:rgba(0,229,255,.08); border:1px solid var(--cyan); color:var(--text-primary);">Isto equivale a <strong>${(preco / valorHora).toFixed(1)} horas</strong> reais de esforço do seu trabalho.</div>`;
+}
+
+/* ==================================================================
+   COFRE
+   ================================================================== */
+document.getElementById('form-gasto-evitado').addEventListener('submit', (e) => {
+  e.preventDefault();
+  cofreTotal += parseFloat(document.getElementById('c-valor').value);
+  localStorage.setItem('f_cofre_total', cofreTotal);
+  document.getElementById('form-gasto-evitado').reset();
+  atualizarTudo();
+});
+
+function limparBanco() { if (confirm("Deseja mesmo apagar todo o histórico da aplicação?")) { localStorage.clear(); location.reload(); } }
+
+/* ==================================================================
+   🔐 SISTEMA DE LOGIN / CADASTRO (autenticação local via localStorage)
+   ------------------------------------------------------------------
+   Não é um backend real de autenticação — é um cadastro local para
+   uso no navegador do próprio usuário, seguindo o mesmo padrão
+   single-file/localStorage do restante do app.
+   ================================================================== */
+function inicializarAuth() {
+  document.getElementById('form-login').addEventListener('submit', tratarLogin);
+  document.getElementById('form-cadastro').addEventListener('submit', tratarCadastro);
+  atualizarHeaderAuth();
+}
+
+function getUsuarios() { return JSON.parse(localStorage.getItem('f_usuarios')) || []; }
+function salvarUsuarios(lista) { localStorage.setItem('f_usuarios', JSON.stringify(lista)); }
+
+function abrirAuthModal(aba) {
+  alternarAbaAuth(aba);
+  const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+  modal.show();
+}
+
+function alternarAbaAuth(aba) {
+  document.getElementById('auth-erro').style.display = 'none';
+  document.getElementById('auth-sucesso').style.display = 'none';
+  const ehLogin = aba === 'login';
+  document.getElementById('form-login').style.display = ehLogin ? 'block' : 'none';
+  document.getElementById('form-cadastro').style.display = ehLogin ? 'none' : 'block';
+  document.getElementById('btn-aba-login').classList.toggle('active', ehLogin);
+  document.getElementById('btn-aba-cadastro').classList.toggle('active', !ehLogin);
+}
+
+function mostrarErroAuth(msg) {
+  const el = document.getElementById('auth-erro');
+  el.innerText = msg; el.style.display = 'block';
+  document.getElementById('auth-sucesso').style.display = 'none';
+}
+
+function tratarCadastro(e) {
+  e.preventDefault();
+  const nome = document.getElementById('cad-nome').value.trim();
+  const email = document.getElementById('cad-email').value.trim().toLowerCase();
+  const senha = document.getElementById('cad-senha').value;
+
+  const usuarios = getUsuarios();
+  if (usuarios.some(u => u.email === email)) {
+    mostrarErroAuth('Já existe uma conta cadastrada com este e-mail. Faça login.');
+    return;
+  }
+
+  usuarios.push({ nome, email, senha });
+  salvarUsuarios(usuarios);
+  localStorage.setItem('f_usuario_logado', email);
+
+  document.getElementById('auth-erro').style.display = 'none';
+  const suc = document.getElementById('auth-sucesso');
+  suc.innerText = `Conta criada com sucesso! Bem-vindo(a), ${nome}.`;
+  suc.style.display = 'block';
+
+  atualizarHeaderAuth();
+  setTimeout(() => { bootstrap.Modal.getInstance(document.getElementById('loginModal'))?.hide(); document.getElementById('form-cadastro').reset(); }, 900);
+}
+
+function tratarLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const senha = document.getElementById('login-senha').value;
+
+  const usuarios = getUsuarios();
+  const encontrado = usuarios.find(u => u.email === email && u.senha === senha);
+
+  if (!encontrado) {
+    mostrarErroAuth('E-mail ou senha incorretos. Verifique os dados ou crie uma conta.');
+    return;
+  }
+
+  localStorage.setItem('f_usuario_logado', email);
+  atualizarHeaderAuth();
+  bootstrap.Modal.getInstance(document.getElementById('loginModal'))?.hide();
+  document.getElementById('form-login').reset();
+}
+
+function fazerLogout() {
+  localStorage.removeItem('f_usuario_logado');
+  atualizarHeaderAuth();
+}
+
+function atualizarHeaderAuth() {
+  const emailLogado = localStorage.getItem('f_usuario_logado');
+  const usuarios = getUsuarios();
+  const usuario = usuarios.find(u => u.email === emailLogado);
+
+  const pill = document.getElementById('user-logado-pill');
+  const botoes = document.getElementById('usuario-topo');
+
+  if (usuario) {
+    document.getElementById('user-logado-nome').innerText = usuario.nome;
+    pill.style.display = 'inline-flex';
+    botoes.style.display = 'none';
+  } else {
+    pill.style.display = 'none';
+    botoes.style.display = 'flex';
+  }
+}
+
+/* ==================================================================
+   🤖 ROBÔ DE ALERTAS FINANCEIROS
+   ------------------------------------------------------------------
+   - Alerta CRÍTICO: quando o saldo já está negativo (ou vai estourar).
+   - Alerta de ATENÇÃO: quando a projeção do fim do mês é negativa.
+   - Confirmação de compra: pergunta antes de gastos/dívidas altas
+     que podem comprometer o saldo por um período.
+   ================================================================== */
+function calcularSaldoAtual() {
+  let ganhos = 0, gastos = 0;
+  transacoes.forEach(t => { t.tipo === 'ganho' ? ganhos += t.valor : gastos += t.valor; });
+  return ganhos - gastos;
+}
+
+// Estima a renda mensal média a partir dos ganhos já registrados (ou usa o saldo como referência)
+function calcularRendaMediaMensal() {
+  const ganhos = transacoes.filter(t => t.tipo === 'ganho');
+  if (ganhos.length === 0) return 0;
+  const meses = new Set(ganhos.map(t => t.data.slice(0, 7)));
+  const totalGanhos = ganhos.reduce((s, t) => s + t.valor, 0);
+  return totalGanhos / Math.max(meses.size, 1);
+}
+
+// Define o que é considerado "compra de alto valor": 30% da renda mensal, ou 40% do saldo atual, ou R$800 fixo
+function ehCompraDeAltoValor(valor) {
+  const renda = calcularRendaMediaMensal();
+  const saldo = calcularSaldoAtual();
+  const limitePorRenda = renda > 0 ? renda * 0.3 : Infinity;
+  const limitePorSaldo = saldo > 0 ? saldo * 0.4 : 0;
+  const limiteFixo = 800;
+  return valor >= Math.min(limitePorRenda, limiteFixo) || (saldo > 0 && valor >= limitePorSaldo) || (saldo <= 0);
+}
+
+// Modal de confirmação genérico com callback, no estilo do robô
+function confirmarComRobo(textoHtml, aoConfirmar) {
+  document.getElementById('modalRoboTexto').innerHTML = textoHtml;
+  const modalEl = document.getElementById('modalRoboConfirma');
+  const modal = new bootstrap.Modal(modalEl);
+
+  const btnConfirmar = document.getElementById('btnRoboConfirmar');
+  const btnCancelar = document.getElementById('btnRoboCancelar');
+
+  const limpar = () => { btnConfirmar.replaceWith(btnConfirmar.cloneNode(true)); btnCancelar.replaceWith(btnCancelar.cloneNode(true)); };
+  limpar();
+
+  document.getElementById('btnRoboConfirmar').addEventListener('click', () => { modal.hide(); aoConfirmar(); });
+  document.getElementById('btnRoboCancelar').addEventListener('click', () => modal.hide());
+
+  modal.show();
+}
+
+// Exibe o widget flutuante do robô (canto inferior direito)
+function exibirAlertaRobo(titulo, texto, tipo) {
+  const box = document.getElementById('robo-alerta');
+  box.className = tipo; // 'critico' ou 'atencao'
+  document.getElementById('robo-alerta-titulo').innerText = titulo;
+  document.getElementById('robo-alerta-texto').innerText = texto;
+  box.style.display = 'flex';
+}
+function fecharAlertaRobo() { document.getElementById('robo-alerta').style.display = 'none'; }
+
+// Verifica o estado do saldo (atual e projetado) e decide se mostra o robô
+let alertaRoboFechadoManualmente = false;
+function verificarAlertasDeSaldo() {
+  const saldoAtual = calcularSaldoAtual();
+
+  if (saldoAtual < 0) {
+    exibirAlertaRobo('Saldo negativo', `Seu saldo já está negativo em ${formatarMoeda(Math.abs(saldoAtual))}. Talvez seja hora de rever seus próximos gastos.`, 'critico');
+    return;
+  }
+
+  const previsao = calcularPrevisaoPreditiva();
+  if (previsao.positivo === false) {
+    exibirAlertaRobo('Risco de saldo negativo', `No ritmo atual de gastos, seu saldo pode ficar negativo até o fim do mês (projeção: ${formatarMoeda(previsao.saldoProjetado)}).`, 'atencao');
+    return;
+  }
+
+  fecharAlertaRobo();
+}
+
+/* ==================================================================
+   EFEITO DE PARTÍCULAS DIGITAIS NO BACKGROUND (HUD)
+   ================================================================== */
+function iniciarParticulas() {
+  const canvas = document.getElementById('particulas');
+  const ctx = canvas.getContext('2d');
+  let w, h, particulas = [];
+
+  function redimensionar() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+  redimensionar();
+  window.addEventListener('resize', redimensionar);
+
+  const cores = ['rgba(0,229,255,', 'rgba(255,45,120,', 'rgba(168,85,247,'];
+  for (let i = 0; i < 55; i++) {
+    particulas.push({
+      x: Math.random() * w, y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.25,
+      r: Math.random() * 1.6 + 0.4, cor: cores[Math.floor(Math.random() * cores.length)],
+      op: Math.random() * 0.5 + 0.15
+    });
+  }
+
+  function animar() {
+    ctx.clearRect(0, 0, w, h);
+    particulas.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.cor + p.op + ')';
+      ctx.fill();
+    });
+    requestAnimationFrame(animar);
+  }
+  animar();
+}
+</script>
 </body>
 </html>
