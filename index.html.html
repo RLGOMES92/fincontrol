@@ -1,0 +1,2685 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinControl // Plataforma de Gestão Financeira</title>
+
+<!-- PWA: instalável e funcional offline -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d0f16">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FinControl">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png" type="image/png">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+
+<style>
+/* ============================================================
+   FINCONTROL 2.0 // TEMA MODERNO + NEON (com suporte a Light Mode)
+   ============================================================ */
+:root{
+  --bg-deep:#0d0f16;
+  --bg-deep-2:#12141d;
+  --bg-card: rgba(22, 25, 35, 0.72);
+  --bg-card-solid:#181b26;
+  --surface-1: rgba(255,255,255,.04);
+  --surface-2: rgba(255,255,255,.02);
+  --border-neon: rgba(255, 255, 255, 0.08);
+  --border-neon-strong: rgba(0, 229, 255, 0.4);
+  --text-primary:#f2f4f8;
+  --text-secondary:#8b90a0;
+  --cyan:#00e5ff;
+  --pink:#ff2d78;
+  --green:#00ffab;
+  --purple:#a855f7;
+  --amber:#ffb020;
+  --grad-cyan: linear-gradient(135deg,#00e5ff,#3d7dff);
+  --grad-pink: linear-gradient(135deg,#ff2d78,#c400ff);
+  --grad-green: linear-gradient(135deg,#00ffab,#00b46e);
+  --grad-amber: linear-gradient(135deg,#ffb020,#ff7a00);
+  --grad-purple: linear-gradient(135deg,#a855f7,#6d28d9);
+  --shadow-card: 0 15px 40px rgba(0,0,0,.45);
+  --ease: cubic-bezier(.16,.84,.44,1);
+}
+
+[data-theme="light"]{
+  --bg-deep:#eef1f8;
+  --bg-deep-2:#e6e9f2;
+  --bg-card: rgba(255, 255, 255, 0.78);
+  --bg-card-solid:#ffffff;
+  --surface-1: rgba(0,0,0,.03);
+  --surface-2: rgba(0,0,0,.02);
+  --border-neon: rgba(0, 0, 0, 0.08);
+  --border-neon-strong: rgba(0, 145, 255, 0.4);
+  --text-primary:#12141c;
+  --text-secondary:#5b6072;
+  --cyan:#0091ff;
+  --pink:#e21e6b;
+  --green:#0aa66b;
+  --purple:#7c3aed;
+  --amber:#c97a00;
+  --shadow-card: 0 10px 28px rgba(20,25,45,.08);
+}
+
+*{ box-sizing:border-box; }
+
+body{
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family:'Rajdhani', sans-serif;
+  min-height:100vh;
+  position:relative;
+  overflow-x:hidden;
+  transition: background .4s var(--ease), color .4s var(--ease);
+}
+
+body::before{
+  content:"";
+  position:fixed; inset:0; z-index:-2;
+  background: linear-gradient(160deg, var(--bg-deep-2) 0%, var(--bg-deep) 45%, var(--bg-deep) 100%);
+}
+body::after{
+  content:"";
+  position:fixed; inset:0; z-index:-1;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(0,229,255,0.07), transparent 45%),
+    radial-gradient(circle at 90% 100%, rgba(0,255,171,0.05), transparent 45%);
+}
+#particulas{ position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.22; }
+
+h1,h2,h3,h4,h5,h6, .logo-text{ font-family:'Orbitron', sans-serif; letter-spacing:.5px; }
+.font-mono{ font-family:'JetBrains Mono', monospace !important; }
+.container{ max-width:1320px; margin-top:26px; margin-bottom:40px; position:relative; z-index:1; }
+
+/* HEADER */
+.main-header{
+  background: var(--bg-card);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border:1px solid var(--border-neon);
+  border-radius:18px; padding:16px 24px; margin-bottom:24px;
+  box-shadow: var(--shadow-card);
+}
+.logo-text{ font-weight:800; font-size:1.4rem; letter-spacing:.5px; color: var(--text-primary); }
+.logo-accent{ color: var(--cyan); text-shadow:0 0 16px rgba(0,229,255,.4); }
+.icon-glow{ color: var(--cyan); filter: drop-shadow(0 0 6px rgba(0,229,255,.4)); }
+.status-pill{
+  font-family:'JetBrains Mono', monospace; font-size:.68rem; letter-spacing:1px;
+  color: var(--green); border:1px solid rgba(0,255,171,.35); background:rgba(0,255,171,.08);
+  padding:4px 10px; border-radius:20px; display:inline-flex; align-items:center; gap:6px;
+}
+.status-pill .dot{ width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:pulseDot 1.6s infinite; }
+@keyframes pulseDot{ 0%,100%{opacity:1;} 50%{opacity:.3;} }
+.icon-btn{
+  width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+  background: var(--surface-1); border:1px solid var(--border-neon); color: var(--text-secondary);
+  transition: all .25s var(--ease); cursor:pointer; font-size:1rem;
+}
+.icon-btn:hover{ color: var(--cyan); border-color: var(--border-neon-strong); }
+.btn-destaque-reserva{
+  background: var(--grad-amber); color:#1a1200; font-weight:700; border-radius:10px; padding:9px 16px; border:none;
+  box-shadow: 0 4px 18px rgba(255,176,32,.3); transition: all .3s var(--ease); white-space:nowrap;
+}
+.btn-destaque-reserva:hover{ transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,176,32,.45); color:#1a1200; }
+
+/* CARDS */
+.card{
+  background: var(--bg-card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border:1px solid var(--border-neon); border-radius:16px; box-shadow: var(--shadow-card);
+  margin-bottom:22px; transition: all .35s var(--ease);
+}
+.card:hover{ border-color: var(--border-neon-strong); transform: translateY(-2px); }
+.card-header{
+  background: var(--surface-1); border-bottom:1px solid var(--border-neon); color: var(--text-primary);
+  font-weight:600; padding:15px 20px; font-family:'Orbitron', sans-serif; font-size:.8rem;
+  text-transform:uppercase; letter-spacing:.5px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+}
+
+/* TABS */
+.nav-tabs{ border-bottom:1px solid var(--border-neon); gap:8px; margin-bottom:22px; flex-wrap:nowrap; overflow-x:auto; padding-bottom:4px; }
+.nav-tabs .nav-link{
+  color: var(--text-secondary); border:1px solid var(--border-neon); border-radius:10px; padding:10px 18px;
+  font-weight:600; letter-spacing:.3px; background: var(--surface-1); transition: all .3s var(--ease); white-space:nowrap; font-size:.9rem;
+}
+.nav-tabs .nav-link:hover{ color:var(--cyan); border-color: var(--border-neon-strong); }
+.nav-tabs .nav-link.active{ color:#0c1420; background: var(--grad-cyan); border-color:transparent; box-shadow: 0 4px 20px rgba(0,229,255,.35); }
+[data-theme="light"] .nav-tabs .nav-link.active{ color:#fff; }
+
+/* BUTTONS */
+.btn{ border-radius:10px; padding:9px 18px; font-weight:700; letter-spacing:.3px; border:none; transition: all .3s var(--ease); }
+.btn-primary{ background: var(--grad-cyan); color:#04101a; box-shadow:0 4px 18px rgba(0,229,255,.25); }
+[data-theme="light"] .btn-primary{ color:#fff; }
+.btn-primary:hover{ transform: translateY(-2px); }
+.btn-success{ background: var(--grad-green); color:#03140c; box-shadow:0 4px 18px rgba(0,255,171,.2); }
+[data-theme="light"] .btn-success{ color:#fff; }
+.btn-success:hover{ transform: translateY(-2px); }
+.btn-danger{ background: var(--grad-pink); color:#fff; box-shadow:0 4px 18px rgba(255,45,120,.25); }
+.btn-danger:hover{ transform: translateY(-2px); }
+.btn-amber{ background: var(--grad-amber); color:#1a1200; box-shadow:0 4px 18px rgba(255,176,32,.25); }
+.btn-purple{ background: var(--grad-purple); color:#fff; box-shadow:0 4px 18px rgba(168,85,247,.25); }
+.btn-secondary{ background: var(--surface-1); color:var(--text-primary); border:1px solid var(--border-neon); }
+.btn-secondary:hover{ background: var(--surface-2); }
+.btn-outline-danger{ border:1px solid var(--pink); color:var(--pink); background:transparent; }
+.btn-outline-danger:hover{ background:var(--pink); color:#fff; }
+.btn-sm-pill{ border-radius:20px; padding:6px 14px; font-size:.8rem; }
+
+/* FORMS */
+.form-select, .form-control{
+  background-color: var(--surface-1); border:1px solid var(--border-neon); color: var(--text-primary);
+  border-radius:10px; padding:10px 14px;
+}
+.form-select:focus, .form-control:focus{ background-color: var(--surface-1); border-color: var(--cyan); color:var(--text-primary); box-shadow: 0 0 0 4px rgba(0,229,255,.12); }
+.form-control::placeholder{ color: var(--text-secondary); opacity:.7; }
+.form-label{ color: var(--text-secondary); font-weight:600; font-size:.8rem; letter-spacing:.3px; text-transform:uppercase; }
+
+/* TABLES */
+.table-responsive{ border-radius:12px; border:1px solid var(--border-neon); background: var(--surface-1); }
+.table{ color: var(--text-primary); margin-bottom:0; }
+.table thead th{ background: var(--surface-1); color: var(--cyan); font-weight:700; font-size:.72rem; letter-spacing:1px; text-transform:uppercase; padding:13px 18px; border-bottom:1px solid var(--border-neon); }
+.table tbody td{ padding:12px 18px; vertical-align:middle; border-bottom:1px solid var(--border-neon); font-size:.92rem; }
+.table-hover tbody tr:hover{ background-color: var(--surface-2); }
+
+/* PROGRESS BARS */
+.progresso-wrap{ background: var(--surface-1); border-radius:20px; height:10px; overflow:hidden; border:1px solid var(--border-neon); }
+.progresso-fill{ height:100%; border-radius:20px; transition: width 1s var(--ease); }
+
+/* CHAT */
+.chat-box{ height:380px; overflow-y:auto; padding:20px; background: var(--surface-1); border-radius:14px; border:1px solid var(--border-neon); margin-bottom:18px; display:flex; flex-direction:column; gap:12px; }
+.balao{ padding:12px 16px; border-radius:14px; max-width:78%; font-size:.92rem; line-height:1.5; white-space:pre-line; }
+.balao.ia{ background: rgba(0,229,255,.06); border:1px solid rgba(0,229,255,.2); align-self:flex-start; border-top-left-radius:4px; color:var(--text-primary); }
+.balao.user{ background: var(--grad-cyan); color:#04101a; align-self:flex-end; border-top-right-radius:4px; font-weight:600; }
+[data-theme="light"] .balao.user{ color:#fff; }
+.balao.preditiva{ border:1px solid rgba(168,85,247,.4); background: rgba(168,85,247,.08); }
+.btn-mic{ background: var(--surface-1); border:1px solid var(--border-neon); color: var(--text-secondary); }
+.btn-mic:hover{ color: var(--cyan); border-color: var(--cyan); }
+.btn-mic.gravando{ background: rgba(255,45,120,.12) !important; border-color: var(--pink) !important; color: var(--pink) !important; animation: pulseMicNeon 1.4s infinite; }
+@keyframes pulseMicNeon{ 0%{box-shadow:0 0 0 0 rgba(255,45,120,.4);} 70%{box-shadow:0 0 0 12px rgba(255,45,120,0);} 100%{box-shadow:0 0 0 0 rgba(255,45,120,0);} }
+
+/* RESUMO CARDS */
+.resumo-card{ background: var(--surface-1); border-radius:14px; padding:18px; border:1px solid var(--border-neon); text-align:center; position:relative; overflow:hidden; }
+.resumo-card h3{ font-size:1.45rem; font-weight:700; margin-bottom:0; }
+.resumo-card h6{ color: var(--text-secondary); font-size:.72rem; letter-spacing:1px; text-transform:uppercase; }
+.resumo-card::after{ content:""; position:absolute; top:0; left:0; right:0; height:2px; }
+.resumo-card.border-success::after{ background: var(--grad-green); }
+.resumo-card.border-danger::after{ background: var(--grad-pink); }
+.resumo-card.border-primary::after{ background: var(--grad-cyan); }
+
+.ia-preditiva-card{ background: linear-gradient(135deg, rgba(168,85,247,.1), rgba(0,229,255,.05)); border:1px solid rgba(168,85,247,.3); border-radius:16px; padding:22px; margin-bottom:22px; }
+.badge-ia{ font-family:'JetBrains Mono',monospace; font-size:.68rem; color:var(--purple); border:1px solid rgba(168,85,247,.5); padding:3px 10px; border-radius:20px; letter-spacing:1px; }
+
+.conquista-card{ background: var(--surface-1); border:1px solid var(--border-neon); border-radius:14px; padding:14px; display:flex; align-items:center; gap:14px; margin-bottom:10px; transition: all .3s var(--ease); }
+.conquista-card.bloqueada{ opacity:.35; }
+.conquista-card:not(.bloqueada){ border-color: rgba(255,176,32,.4); }
+.conquista-icone{ font-size:1.7rem; color: var(--amber); }
+
+.mes-item{ border:1px solid var(--border-neon); border-radius:12px; padding:13px 17px; margin-bottom:9px; background: var(--surface-1); }
+.mes-item .mes-nome{ font-family:'Orbitron', sans-serif; font-size:.78rem; color: var(--text-primary); text-transform:capitalize; }
+.mes-item .mes-valores{ display:flex; gap:20px; flex-wrap:wrap; margin-top:5px; font-family:'JetBrains Mono', monospace; font-size:.82rem; }
+.mes-item .mes-valores span b{ display:block; font-size:.65rem; font-weight:400; color:var(--text-secondary); text-transform:uppercase; }
+
+.compromisso-item{ display:flex; justify-content:space-between; align-items:center; gap:10px; border:1px solid rgba(255,176,32,.2); background: rgba(255,176,32,.05); border-radius:12px; padding:11px 15px; margin-bottom:8px; }
+.compromisso-item .nome{ font-weight:600; color: var(--text-primary); font-size:.9rem; }
+.compromisso-item .meses-restantes{ font-size:.72rem; color: var(--text-secondary); }
+.compromisso-item .valor{ font-family:'JetBrains Mono', monospace; font-weight:700; color: var(--amber); }
+#total-compromissos-box{ border:1px solid rgba(255,45,120,.3); background: rgba(255,45,120,.06); border-radius:12px; padding:13px 17px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+
+/* DÍVIDAS — CARDS DE AMORTIZAÇÃO */
+.divida-card{ border:1px solid var(--border-neon); border-radius:14px; padding:18px; margin-bottom:14px; background: var(--surface-1); }
+.divida-card.quitada{ opacity:.6; }
+.divida-topo{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+.divida-nome{ font-weight:700; color: var(--text-primary); font-size:1.02rem; }
+.divida-badge-cat{ font-size:.68rem; border:1px solid var(--border-neon); border-radius:20px; padding:2px 10px; color: var(--text-secondary); }
+.divida-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; margin:12px 0; font-family:'JetBrains Mono', monospace; }
+.divida-grid .item b{ display:block; font-size:.65rem; font-weight:400; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.4px; margin-bottom:2px; }
+.divida-grid .item span{ font-size:.95rem; font-weight:700; }
+
+/* POTES (ENVELOPES) */
+.pote-card{ border:1px solid var(--border-neon); border-radius:14px; padding:16px; background: var(--surface-1); margin-bottom:14px; }
+.pote-topo{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.pote-icone{ width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; }
+.pote-nome{ font-weight:700; color: var(--text-primary); }
+.pote-percentual{ font-size:.72rem; color: var(--text-secondary); font-family:'JetBrains Mono', monospace; }
+.widget-sobra{ border-radius:14px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:6px; }
+.widget-sobra.ok{ background: rgba(0,255,171,.08); border:1px solid rgba(0,255,171,.3); }
+.widget-sobra.estourado{ background: rgba(255,45,120,.08); border:1px solid rgba(255,45,120,.3); }
+
+/* RESERVA DE EMERGÊNCIA */
+.reserva-hero{ text-align:center; padding:10px 0 20px 0; }
+.reserva-valor-atual{ font-family:'Orbitron', sans-serif; font-size:2.1rem; font-weight:800; color: var(--green); }
+.reserva-meta-label{ color: var(--text-secondary); font-size:.85rem; }
+.reserva-barra-wrap{ background: var(--surface-1); border-radius:20px; height:22px; overflow:hidden; border:1px solid var(--border-neon); margin:16px 0; position:relative; }
+.reserva-barra-fill{ height:100%; background: var(--grad-green); border-radius:20px; transition: width 1.2s var(--ease); display:flex; align-items:center; justify-content:flex-end; padding-right:8px; }
+.reserva-barra-fill span{ font-size:.7rem; font-weight:700; color:#03140c; font-family:'JetBrains Mono', monospace; }
+.marcos-reserva{ display:flex; justify-content:space-between; margin-top:8px; }
+.marco{ text-align:center; flex:1; }
+.marco .bolha{ width:30px; height:30px; border-radius:50%; margin:0 auto 4px auto; display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700; background: var(--surface-1); border:1px solid var(--border-neon); color: var(--text-secondary); }
+.marco.atingido .bolha{ background: var(--grad-green); color:#03140c; border-color:transparent; }
+.marco span{ font-size:.65rem; color: var(--text-secondary); }
+.aporte-rapido-btns{ display:flex; gap:8px; flex-wrap:wrap; }
+.btn-aporte{ background: var(--surface-1); border:1px solid var(--border-neon); color: var(--text-primary); border-radius:10px; padding:9px 16px; font-weight:700; transition: all .25s var(--ease); }
+.btn-aporte:hover{ border-color: var(--green); color: var(--green); }
+
+/* FUNDO PREPARADO */
+.fundo-card{ border:1px solid var(--border-neon); border-radius:14px; padding:16px; background: var(--surface-1); margin-bottom:12px; }
+.fundo-topo{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+.fundo-nome{ font-weight:700; color: var(--text-primary); }
+.fundo-prazo{ font-size:.72rem; color: var(--text-secondary); }
+.fundo-mensal-necessario{ font-family:'JetBrains Mono', monospace; font-weight:700; color: var(--purple); font-size:.9rem; }
+
+/* CHECK-IN SEMANAL */
+.checkin-badge{ display:inline-flex; align-items:center; gap:8px; padding:8px 16px; border-radius:20px; font-size:.85rem; font-weight:600; }
+.checkin-badge.em-dia{ background: rgba(0,255,171,.1); border:1px solid rgba(0,255,171,.35); color: var(--green); }
+.checkin-badge.pendente{ background: rgba(255,176,32,.1); border:1px solid rgba(255,176,32,.35); color: var(--amber); }
+.checkin-step{ display:none; }
+.checkin-step.ativo{ display:block; }
+.checkin-progresso{ display:flex; gap:6px; margin-bottom:20px; }
+.checkin-progresso .barra{ flex:1; height:5px; border-radius:10px; background: var(--surface-1); }
+.checkin-progresso .barra.ativa{ background: var(--grad-cyan); }
+
+/* MODAIS */
+.modal-content{ background: var(--bg-card-solid); border:1px solid var(--border-neon); color:var(--text-primary); border-radius:16px; }
+.modal-header{ border-bottom:1px solid var(--border-neon); }
+.btn-close{ filter: invert(var(--btn-close-invert, 1)); }
+[data-theme="light"] .btn-close{ filter: invert(0); }
+.modal-robo-icone{ width:56px; height:56px; border-radius:50%; background: rgba(255,176,32,.12); color: var(--amber); display:flex; align-items:center; justify-content:center; font-size:1.6rem; margin:0 auto 14px auto; }
+
+::-webkit-scrollbar{ width:8px; height:8px; }
+::-webkit-scrollbar-track{ background: var(--surface-2); }
+::-webkit-scrollbar-thumb{ background: rgba(0,229,255,.3); border-radius:10px; }
+
+/* ROBÔ DE ALERTAS */
+#robo-alerta{ position: fixed; bottom: 20px; right: 20px; z-index: 1080; max-width: 330px; display: none; gap: 12px; background: var(--bg-card-solid); border-radius: 16px; padding: 15px; border: 1px solid var(--border-neon); box-shadow: 0 20px 45px rgba(0,0,0,.35); animation: subirAlerta .4s var(--ease); }
+#robo-alerta.critico{ border-color: rgba(255,45,120,.5); }
+#robo-alerta.atencao{ border-color: rgba(255,176,32,.5); }
+@keyframes subirAlerta{ from{ opacity:0; transform: translateY(16px); } to{ opacity:1; transform: translateY(0); } }
+.robo-icone-wrap{ width: 40px; height: 40px; min-width:40px; border-radius: 50%; display:flex; align-items:center; justify-content:center; background: var(--surface-1); font-size:1.2rem; align-self:flex-start; }
+#robo-alerta.critico .robo-icone-wrap{ background: rgba(255,45,120,.15); color: var(--pink); animation: balancarRobo 1s infinite; }
+#robo-alerta.atencao .robo-icone-wrap{ background: rgba(255,176,32,.15); color: var(--amber); }
+@keyframes balancarRobo{ 0%,100%{ transform: rotate(-6deg);} 50%{ transform: rotate(6deg);} }
+#robo-alerta .robo-texto{ font-size:.85rem; line-height:1.4; }
+#robo-alerta .robo-titulo{ font-weight:700; font-size:.75rem; letter-spacing:.4px; text-transform:uppercase; margin-bottom:3px; }
+#robo-alerta.critico .robo-titulo{ color: var(--pink); }
+#robo-alerta.atencao .robo-titulo{ color: var(--amber); }
+#robo-alerta .robo-fechar{ background:none; border:none; color: var(--text-secondary); position:absolute; top:10px; right:12px; font-size:1rem; cursor:pointer; }
+
+/* PRIVACIDADE — leve efeito ao ocultar valores */
+.valores-ocultos .font-mono{ letter-spacing:2px; }
+
+/* ============================================================
+   IMPORTADOR DE EXTRATO (OFX/CSV)
+   ============================================================ */
+.dropzone-extrato{
+  border:2px dashed var(--border-neon); border-radius:14px; padding:32px 20px; text-align:center;
+  cursor:pointer; transition: all .25s var(--ease); background: var(--surface-1);
+}
+.dropzone-extrato:hover, .dropzone-extrato.arrastando{ border-color: var(--cyan); background: rgba(0,229,255,.05); }
+#tabela-preview-extrato tr.linha-duplicata{ opacity:.55; }
+#tabela-preview-extrato .badge-duplicata{ font-size:.65rem; background: rgba(255,176,32,.15); color: var(--amber); border:1px solid rgba(255,176,32,.35); padding:2px 8px; border-radius:20px; }
+
+/* GOOGLE DRIVE — lista de backups */
+.drive-backup-item{ display:flex; justify-content:space-between; align-items:center; gap:10px; border:1px solid var(--border-neon); background: var(--surface-1); border-radius:12px; padding:12px 16px; margin-bottom:8px; }
+.drive-backup-item .nome{ font-size:.85rem; font-weight:600; }
+.drive-backup-item .data{ font-size:.72rem; color: var(--text-secondary); }
+
+/* SCORE DE SAÚDE FINANCEIRA */
+.score-componente{ margin-bottom:14px; }
+.score-componente-topo{ display:flex; justify-content:space-between; font-size:.82rem; margin-bottom:5px; color: var(--text-secondary); }
+.score-componente-topo span:last-child{ color: var(--text-primary); font-weight:600; }
+#score-classificacao{ font-family:'Orbitron', sans-serif; font-size:.85rem; letter-spacing:.5px; }
+
+/* COMPARADOR DE DÍVIDAS */
+.estrategia-card{ border:1px solid var(--border-neon); border-radius:14px; padding:18px; background: var(--surface-1); }
+.estrategia-card.vencedora{ border-color: rgba(0,255,171,.45); background: rgba(0,255,171,.05); }
+.estrategia-card h6{ font-family:'Orbitron', sans-serif; font-size:.85rem; }
+.estrategia-metrica{ display:flex; justify-content:space-between; font-size:.85rem; padding:6px 0; border-bottom:1px solid var(--border-neon); }
+.estrategia-metrica:last-child{ border-bottom:none; }
+
+/* ============================================================
+   TELA DE BLOQUEIO — Cofre Local Criptografado (FinControl 3.0)
+   ============================================================ */
+#tela-bloqueio{
+  position:fixed; inset:0; z-index:2000; display:none; align-items:center; justify-content:center;
+  background: var(--bg-deep); padding:20px; overflow-y:auto;
+}
+#tela-bloqueio::before{
+  content:""; position:fixed; inset:0; z-index:0;
+  background: radial-gradient(circle at 20% 20%, rgba(0,229,255,.08), transparent 50%), radial-gradient(circle at 80% 80%, rgba(0,255,171,.06), transparent 50%);
+}
+.bloqueio-card{ position:relative; z-index:1; width:100%; max-width:420px; background:var(--bg-card-solid); border:1px solid var(--border-neon); border-radius:18px; padding:32px 28px; box-shadow: var(--shadow-card); margin:20px 0; }
+.bloqueio-logo{ text-align:center; margin-bottom:20px; }
+.aviso-zero-knowledge{ background: rgba(255,176,32,.08); border:1px solid rgba(255,176,32,.3); border-radius:12px; padding:12px 14px; font-size:.76rem; color: var(--text-secondary); margin-bottom:18px; line-height:1.5; }
+.bloqueio-troca-conta{ text-align:center; margin-top:14px; font-size:.85rem; }
+.bloqueio-troca-conta a{ color: var(--cyan); cursor:pointer; text-decoration:underline; }
+.seletor-contas{ display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+.conta-item-btn{ display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; border:1px solid var(--border-neon); background:var(--surface-1); cursor:pointer; transition: all .2s var(--ease); text-align:left; width:100%; color:var(--text-primary); }
+.conta-item-btn:hover{ border-color: var(--border-neon-strong); }
+#conta-ativa-pill{ font-size:.85rem; color: var(--text-primary); border:1px solid var(--border-neon); background: var(--surface-1); padding:6px 14px; border-radius:20px; display:inline-flex; align-items:center; gap:8px; }
+
+@media (max-width: 768px) {
+  .nav-tabs{ display:flex !important; flex-wrap:nowrap !important; overflow-x:auto !important; -webkit-overflow-scrolling:touch; }
+  .nav-item{ flex:0 0 auto; }
+  .logo-text{ font-size:1.15rem; }
+  .btn-destaque-reserva span{ display:none; }
+}
+</style>
+</head>
+<body>
+<div id="tela-bloqueio">
+  <div class="bloqueio-card">
+    <div class="bloqueio-logo">
+      <i class="bi bi-shield-lock-fill icon-glow fs-1"></i>
+      <h1 class="logo-text mt-2 mb-0" style="font-size:1.3rem;">FIN<span class="logo-accent">CONTROL</span></h1>
+      <div class="text-secondary" style="font-size:.8rem;">Cofre local criptografado (AES-256)</div>
+    </div>
+
+    <div class="aviso-zero-knowledge">
+      <i class="bi bi-info-circle"></i> Seus dados são criptografados no seu próprio navegador com uma chave derivada da sua Senha Mestra. <strong>Ninguém — nem este app — consegue recuperar sua senha caso você a esqueça.</strong> Sem ela, os dados ficam permanentemente ilegíveis. Guarde-a com cuidado.
+    </div>
+
+    <div id="bloqueio-erro" class="alert alert-danger py-2" style="display:none; font-size:.85rem;"></div>
+
+    <div id="bloqueio-selecao-contas" style="display:none;">
+      <label class="form-label">Escolha sua conta</label>
+      <div class="seletor-contas" id="lista-contas-bloqueio"></div>
+      <div class="bloqueio-troca-conta"><a onclick="mostrarTelaCriarConta()">+ Criar nova conta neste navegador</a></div>
+    </div>
+
+    <form id="form-desbloquear" style="display:none;">
+      <div class="mb-2 text-center"><i class="bi bi-person-circle"></i> <span id="desbloquear-nome-conta" class="fw-bold"></span></div>
+      <div class="mb-3"><label class="form-label">Senha Mestra</label><input type="password" class="form-control" id="desbloquear-senha" autofocus></div>
+      <button type="submit" class="btn btn-primary w-100">Desbloquear</button>
+      <div class="bloqueio-troca-conta"><a onclick="mostrarSelecaoContas()">← Escolher outra conta</a></div>
+    </form>
+
+    <form id="form-criar-conta" style="display:none;">
+      <div id="aviso-migracao" class="alert alert-info py-2" style="display:none; font-size:.8rem;"><i class="bi bi-arrow-repeat"></i> Encontramos dados de uma versão anterior do FinControl neste navegador. Ao criar sua Senha Mestra, eles serão automaticamente importados e protegidos com criptografia.</div>
+      <div class="mb-3"><label class="form-label">Seu Nome</label><input type="text" class="form-control" id="criar-nome"></div>
+      <div class="mb-3"><label class="form-label">E-mail (identifica sua conta neste dispositivo)</label><input type="email" class="form-control" id="criar-email"></div>
+      <div class="mb-3"><label class="form-label">Senha Mestra (mínimo 6 caracteres)</label><input type="password" class="form-control" id="criar-senha" minlength="6"></div>
+      <div class="mb-3"><label class="form-label">Confirmar Senha Mestra</label><input type="password" class="form-control" id="criar-senha-confirma" minlength="6"></div>
+      <button type="submit" class="btn btn-success w-100">Criar Senha Mestra e Entrar</button>
+      <div class="bloqueio-troca-conta" id="link-ja-tenho-conta" style="display:none;"><a onclick="mostrarSelecaoContas()">← Já tenho uma conta neste navegador</a></div>
+    </form>
+  </div>
+</div>
+
+
+<canvas id="particulas"></canvas>
+<div class="container">
+  <header class="main-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-cpu-fill icon-glow fs-4"></i>
+      <h1 class="mb-0 logo-text">FIN<span class="logo-accent">CONTROL</span></h1>
+    </div>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span class="status-pill d-none d-md-inline-flex"><span class="dot"></span> ONLINE</span>
+
+      <button class="btn-destaque-reserva" onclick="abrirAporteRapidoModal()"><i class="bi bi-piggy-bank-fill"></i> <span>Salário caiu? Separe sua reserva</span></button>
+
+      <button class="icon-btn" title="Check-in semanal" onclick="abrirCheckinWizard()"><i class="bi bi-clipboard2-pulse"></i></button>
+      <button class="icon-btn" id="btn-tema" title="Alternar tema" onclick="alternarTema()"><i class="bi bi-moon-stars-fill"></i></button>
+      <button class="icon-btn" id="btn-privacidade" title="Ocultar valores" onclick="alternarPrivacidade()"><i class="bi bi-eye-fill"></i></button>
+
+      <button class="icon-btn" id="btn-instalar-app" title="Instalar aplicativo" onclick="instalarApp()" style="display:none;"><i class="bi bi-download"></i></button>
+
+      <div class="dropdown">
+        <button class="icon-btn" data-bs-toggle="dropdown" title="Backup"><i class="bi bi-three-dots-vertical"></i></button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><h6 class="dropdown-header">Backup local</h6></li>
+          <li><button class="dropdown-item" onclick="exportarBackup()"><i class="bi bi-download"></i> Exportar Backup (JSON cifrado)</button></li>
+          <li><button class="dropdown-item" onclick="document.getElementById('inputImportar').click()"><i class="bi bi-upload"></i> Importar Backup</button></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><h6 class="dropdown-header">Nuvem privada (Zero-Knowledge)</h6></li>
+          <li><button class="dropdown-item" id="btn-drive-conectar" onclick="conectarGoogleDrive()"><i class="bi bi-google"></i> Conectar ao Google Drive</button></li>
+          <li><button class="dropdown-item" id="btn-drive-enviar" onclick="enviarBackupParaDrive()" style="display:none;"><i class="bi bi-cloud-upload-fill"></i> Enviar backup cifrado ao Drive</button></li>
+          <li><button class="dropdown-item" id="btn-drive-restaurar" onclick="listarBackupsDoDrive()" style="display:none;"><i class="bi bi-cloud-download-fill"></i> Restaurar backup do Drive</button></li>
+        </ul>
+      </div>
+      <input type="file" id="inputImportar" accept="application/json" style="display:none;" onchange="importarBackup(this.files[0])">
+
+      <span id="conta-ativa-pill"><i class="bi bi-shield-lock-fill" style="color:var(--green);"></i> <span id="conta-ativa-nome"></span>
+        <button class="btn btn-secondary btn-sm py-0 px-2 ms-1" onclick="bloquearApp()" title="Bloquear cofre"><i class="bi bi-lock-fill"></i> Bloquear</button>
+      </span>
+    </div>
+  </header>
+
+  <ul class="nav nav-tabs" id="painelTabs" role="tablist">
+    <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#resumo" type="button"><i class="bi bi-speedometer2"></i> Visão Geral</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#transacoes" type="button"><i class="bi bi-cash-coin"></i> Ganhos e Gastos</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dividas" type="button"><i class="bi bi-credit-card-2-front"></i> Dívidas</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#potes" type="button"><i class="bi bi-envelope-paper-fill"></i> Potes</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#reserva" type="button"><i class="bi bi-shield-fill-check"></i> Reserva</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#fundos" type="button"><i class="bi bi-archive-fill"></i> Fundo Preparado</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#preco-horas" type="button"><i class="bi bi-hourglass-split"></i> Valor do Tempo</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#cofre" type="button"><i class="bi bi-safe2"></i> Cofre</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#assistente" type="button"><i class="bi bi-robot"></i> Assistente IA</button></li>
+  </ul>
+
+  <div class="tab-content" id="conteudoAbas">
+
+    <!-- ============================================================ -->
+    <!-- VISÃO GERAL -->
+    <!-- ============================================================ -->
+    <div class="tab-pane fade show active" id="resumo">
+
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <div id="checkin-badge-container"></div>
+      </div>
+
+      <div class="card score-saude-card">
+        <div class="card-header"><span><i class="bi bi-heart-pulse-fill"></i> Score de Saúde Financeira</span></div>
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-4 text-center">
+              <div id="graficoScoreSaude"></div>
+              <div id="score-classificacao" class="fw-bold mt-1"></div>
+            </div>
+            <div class="col-md-8">
+              <div class="score-componente">
+                <div class="score-componente-topo"><span>🛟 Reserva de Emergência</span><span id="score-reserva-pts" class="font-mono"></span></div>
+                <div class="progresso-wrap"><div class="progresso-fill" id="score-reserva-barra" style="width:0%; background:var(--grad-cyan);"></div></div>
+              </div>
+              <div class="score-componente">
+                <div class="score-componente-topo"><span>💰 Taxa de Poupança do Mês</span><span id="score-poupanca-pts" class="font-mono"></span></div>
+                <div class="progresso-wrap"><div class="progresso-fill" id="score-poupanca-barra" style="width:0%; background:var(--grad-green);"></div></div>
+              </div>
+              <div class="score-componente">
+                <div class="score-componente-topo"><span>💳 Comprometimento com Dívidas</span><span id="score-dividas-pts" class="font-mono"></span></div>
+                <div class="progresso-wrap"><div class="progresso-fill" id="score-dividas-barra" style="width:0%; background:var(--grad-pink);"></div></div>
+              </div>
+              <p id="score-dica" class="text-secondary mb-0 mt-2" style="font-size:.82rem;"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-2">
+        <div class="col-md-4"><div class="resumo-card border-success"><h6>Total de Ganhos</h6><h3 style="color:var(--green);" id="resumo-ganhos">R$ 0</h3></div></div>
+        <div class="col-md-4"><div class="resumo-card border-danger"><h6>Total de Gastos</h6><h3 style="color:var(--pink);" id="resumo-gastos">R$ 0</h3></div></div>
+        <div class="col-md-4"><div class="resumo-card border-primary"><h6>Saldo Atual</h6><h3 style="color:var(--cyan);" id="resumo-saldo">R$ 0,00</h3></div></div>
+      </div>
+
+      <div class="ia-preditiva-card mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="mb-0"><i class="bi bi-graph-up-arrow" style="color:var(--purple);"></i> Previsão Preditiva da IA</h5>
+          <span class="badge-ia">MODELO LOCAL</span>
+        </div>
+        <p id="texto-preditivo" class="mb-0 text-secondary">Registre alguns lançamentos neste mês para que a IA calcule sua projeção de saldo.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span><i class="bi bi-calendar3-range"></i> Detalhamento Mês a Mês</span></div>
+        <div class="card-body p-3">
+          <div id="lista-meses"><p class="text-center text-secondary mb-0">Nenhum lançamento registrado ainda.</p></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span><i class="bi bi-clock-history"></i> Compromissos Fixos Já Programados</span></div>
+        <div class="card-body p-3">
+          <p class="text-secondary" style="font-size:.85rem;">Parcelas de dívidas e fundos preparados que já vão sair do seu saldo nos próximos meses.</p>
+          <div id="lista-compromissos"><p class="text-center text-secondary mb-0">Nenhum compromisso fixo cadastrado.</p></div>
+          <div id="total-compromissos-box" class="mt-3" style="display:none;"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Distribuição de Gastos por Categoria</div>
+        <div class="card-body d-flex justify-content-center"><div style="width:100%; max-width:420px;"><div id="graficoApex"></div></div></div>
+      </div>
+      <div class="text-center"><button class="btn btn-outline-danger btn-sm" onclick="limparBanco()"><i class="bi bi-trash"></i> Apagar Todos os Dados</button></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TRANSAÇÕES -->
+    <!-- ============================================================ -->
+    <div class="tab-pane fade" id="transacoes">
+
+      <div class="card">
+        <div class="card-header"><span><i class="bi bi-file-earmark-arrow-up-fill"></i> Importar Extrato Bancário (OFX / CSV)</span></div>
+        <div class="card-body">
+          <div id="dropzone-extrato" class="dropzone-extrato" onclick="document.getElementById('input-arquivo-extrato').click()">
+            <i class="bi bi-cloud-arrow-up-fill fs-1" style="color:var(--cyan);"></i>
+            <p class="mb-1 fw-bold">Arraste seu extrato .ofx ou .csv aqui</p>
+            <p class="text-secondary mb-0" style="font-size:.82rem;">ou clique para selecionar o arquivo — nada sai do seu navegador</p>
+          </div>
+          <input type="file" id="input-arquivo-extrato" accept=".ofx,.csv,.txt" style="display:none;" onchange="processarArquivoExtrato(this.files[0])">
+
+          <!-- Mapeamento manual de colunas (aparece só se o CSV não for reconhecido automaticamente) -->
+          <div id="mapeamento-csv" style="display:none;" class="mt-3 p-3" style="border:1px dashed var(--border-neon); border-radius:12px;">
+            <p class="text-secondary mb-2" style="font-size:.82rem;">Não identifiquei as colunas automaticamente. Indique qual coluna é qual:</p>
+            <div class="row g-2">
+              <div class="col-4"><label class="form-label">Coluna da Data</label><select class="form-select form-select-sm" id="map-col-data"></select></div>
+              <div class="col-4"><label class="form-label">Coluna da Descrição</label><select class="form-select form-select-sm" id="map-col-desc"></select></div>
+              <div class="col-4"><label class="form-label">Coluna do Valor</label><select class="form-select form-select-sm" id="map-col-valor"></select></div>
+            </div>
+            <button class="btn btn-sm btn-primary mt-2" onclick="reprocessarComMapeamentoManual()">Aplicar Mapeamento</button>
+          </div>
+
+          <!-- Prévia das transações detectadas -->
+          <div id="preview-extrato" style="display:none;" class="mt-3">
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+              <p class="mb-0" style="font-size:.85rem;"><span id="preview-contagem" class="fw-bold"></span> — desmarque o que não quiser importar. Possíveis duplicatas já vêm desmarcadas.</p>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-secondary" onclick="marcarTodosPreview(true)">Marcar todos</button>
+                <button class="btn btn-sm btn-secondary" onclick="marcarTodosPreview(false)">Desmarcar todos</button>
+              </div>
+            </div>
+            <div class="table-responsive" style="max-height:360px; overflow-y:auto;">
+              <table class="table table-hover mb-0">
+                <thead><tr><th></th><th>Data</th><th>Descrição</th><th>Categoria</th><th>Valor</th><th>Tipo</th><th></th></tr></thead>
+                <tbody id="tabela-preview-extrato"></tbody>
+              </table>
+            </div>
+            <button class="btn btn-success mt-3" onclick="confirmarImportacaoExtrato()"><i class="bi bi-check-circle"></i> Confirmar Importação</button>
+            <button class="btn btn-secondary mt-3" onclick="cancelarImportacaoExtrato()">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">Adicionar Novo Registro</div>
+            <div class="card-body">
+              <form id="form-transacao">
+                <div class="mb-3"><label class="form-label">Tipo</label>
+                  <select class="form-select" id="t-tipo" required>
+                    <option value="ganho">🟢 Ganho (Entrada)</option>
+                    <option value="gasto">🔴 Gasto (Saída)</option>
+                  </select>
+                </div>
+                <div class="mb-3"><label class="form-label">Valor (R$)</label><input type="number" class="form-control" id="t-valor" step="0.01" placeholder="0,00" required></div>
+                <div class="mb-3"><label class="form-label">Categoria</label>
+                  <select class="form-select" id="t-categoria" required>
+                    <option value="Salário">Salário</option><option value="Alimentação">Alimentação</option>
+                    <option value="Moradia">Moradia</option><option value="Transporte">Transporte</option>
+                    <option value="Lazer">Lazer</option><option value="Outros">Outros</option>
+                  </select>
+                </div>
+                <div class="mb-3"><label class="form-label">Data</label><input type="date" class="form-control" id="t-data" required></div>
+                <div class="mb-3"><label class="form-label">Nome do Gasto / Descrição</label><input type="text" class="form-control" id="t-desc" placeholder="Ex: Mercado / Conta de Luz" required></div>
+                <button type="submit" class="btn btn-primary w-100">Adicionar na Lista</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">Histórico de Entradas e Saídas</div>
+            <div class="card-body p-3">
+              <div class="table-responsive"><table class="table table-hover">
+                <thead><tr><th>Tipo</th><th>Descrição</th><th>Categoria</th><th>Conta</th><th>Data</th><th>Valor</th><th>Ação</th></tr></thead>
+                <tbody id="tabela-transacoes"></tbody>
+              </table></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- DÍVIDAS (MÓDULO AVANÇADO) -->
+    <!-- ============================================================ -->
+    <div class="tab-pane fade" id="dividas">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">Cadastrar Nova Dívida</div>
+            <div class="card-body">
+              <form id="form-divida">
+                <div class="mb-3"><label class="form-label">Nome da Dívida / Credor</label><input type="text" class="form-control" id="d-nome" placeholder="Ex: Cartão de Crédito" required></div>
+                <div class="mb-3"><label class="form-label">Categoria</label>
+                  <select class="form-select" id="d-categoria" required>
+                    <option value="Cartão de Crédito">Cartão de Crédito</option>
+                    <option value="Empréstimo">Empréstimo</option>
+                    <option value="Financiamento">Financiamento</option>
+                    <option value="Aluguel">Aluguel</option>
+                    <option value="Outros">Outros</option>
+                  </select>
+                </div>
+                <div class="mb-3"><label class="form-label">Valor Total (R$)</label><input type="number" class="form-control" id="d-valor" step="0.01" placeholder="0,00" required></div>
+                <div class="mb-3"><label class="form-label">Total de Parcelas</label><input type="number" class="form-control" id="d-parcelas" placeholder="Ex: 12" required></div>
+                <div class="mb-3"><label class="form-label">Mês da 1ª Parcela</label><input type="month" class="form-control" id="d-mes-inicio" required></div>
+                <div class="mb-3"><label class="form-label">Taxa de Juros (% ao mês) — opcional</label><input type="number" class="form-control" id="d-taxa-juros" step="0.01" placeholder="Ex: 2.5"></div>
+                <button type="submit" class="btn btn-primary w-100">Salvar Dívida</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header"><span>Minhas Dívidas — Amortização</span></div>
+            <div class="card-body p-3"><div id="lista-dividas"><p class="text-center text-secondary mb-0">Nenhuma dívida cadastrada.</p></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span><i class="bi bi-lightning-charge-fill"></i> Comparador de Estratégias — Bola de Neve vs. Avalanche</span></div>
+        <div class="card-body">
+          <p class="text-secondary" style="font-size:.85rem;">
+            <strong>Bola de Neve:</strong> quita primeiro a dívida de MENOR saldo, gerando vitórias rápidas que motivam a continuar.
+            <strong>Avalanche:</strong> quita primeiro a dívida de MAIOR taxa de juros, economizando mais dinheiro no total.
+            Informe a taxa de juros de cada dívida acima para uma comparação mais precisa.
+          </p>
+          <div class="row align-items-end mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Quanto você pode destinar A MAIS por mês (além das parcelas mínimas)?</label>
+              <input type="number" class="form-control" id="comparador-extra-mensal" step="0.01" placeholder="Ex: 300">
+            </div>
+            <div class="col-md-3"><button class="btn btn-primary w-100" onclick="compararEstrategiasQuitacao()">Comparar Estratégias</button></div>
+          </div>
+          <div id="resultado-comparador"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Projeção de Comprometimento (Próximos 12 Meses)</div>
+        <div class="card-body"><div id="graficoProjecao"></div></div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- POTES / ENVELOPES -->
+    <!-- ============================================================ -->
+    <div class="tab-pane fade" id="potes">
+      <div class="card">
+        <div class="card-header">Orçamento Base Zero — Dê uma Função para Cada Real</div>
+        <div class="card-body">
+          <div class="row align-items-end mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Renda Total do Mês (R$)</label>
+              <input type="number" class="form-control" id="pote-renda" step="0.01" placeholder="Ex: 4000">
+            </div>
+            <div class="col-md-3"><button class="btn btn-primary w-100" onclick="salvarRendaPotes()">Salvar Renda</button></div>
+          </div>
+          <div id="widget-sobra-potes"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-7">
+          <div id="lista-potes"></div>
+        </div>
+        <div class="col-md-5">
+          <div class="card">
+            <div class="card-header">Distribuição dos Potes</div>
+            <div class="card-body d-flex justify-content-center"><div id="graficoPotes" style="width:100%;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- RESERVA DE EMERGÊNCIA -->
+    <!-- ============================================================ -->
+    <div class="tab-pane fade" id="reserva">
+      <div class="row">
+        <div class="col-md-5">
+          <div class="card">
+            <div class="card-header">Configurar Meta</div>
+            <div class="card-body">
+              <div class="mb-3"><label class="form-label">Custo Fixo Mensal (R$)</label><input type="number" class="form-control" id="reserva-custo-fixo" step="0.01" placeholder="Ex: 2000"></div>
+              <div class="mb-3"><label class="form-label">Meta de Reserva</label>
+                <select class="form-select" id="reserva-meta-meses">
+                  <option value="3">3 meses de custo fixo</option>
+                  <option value="6" selected>6 meses de custo fixo</option>
+                  <option value="12">12 meses de custo fixo</option>
+                </select>
+              </div>
+              <button class="btn btn-primary w-100" onclick="salvarMetaReserva()">Salvar Meta</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">Aporte Rápido</div>
+            <div class="card-body">
+              <div class="aporte-rapido-btns mb-3">
+                <button class="btn-aporte" onclick="aportarReserva(20)">+ R$20</button>
+                <button class="btn-aporte" onclick="aportarReserva(50)">+ R$50</button>
+                <button class="btn-aporte" onclick="aportarReserva(100)">+ R$100</button>
+              </div>
+              <div class="input-group">
+                <input type="number" class="form-control" id="reserva-valor-custom" placeholder="Outro valor">
+                <button class="btn btn-success" onclick="aportarReservaCustom()">Guardar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-7">
+          <div class="card">
+            <div class="card-header">Progresso da Reserva de Emergência</div>
+            <div class="card-body">
+              <div class="reserva-hero">
+                <div class="reserva-valor-atual" id="reserva-valor-atual">R$ 0</div>
+                <div class="reserva-meta-label">de <span id="reserva-meta-texto">R$ 0</span> — meta de <span id="reserva-meses-texto">6 meses</span></div>
+              </div>
+              <div class="reserva-barra-wrap"><div class="reserva-barra-fill" id="reserva-barra" style="width:0%;"><span id="reserva-percentual">0%</span></div></div>
+              <div class="marcos-reserva">
+                <div class="marco" id="marco-10"><div class="bolha">10%</div><span>Início</span></div>
+                <div class="marco" id="marco-25"><div class="bolha">25%</div><span>Andando</span></div>
+                <div class="marco" id="marco-50"><div class="bolha">50%</div><span>Metade</span></div>
+                <div class="marco" id="marco-100"><div class="bolha"><i class="bi bi-trophy-fill"></i></div><span>Completa!</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- FUNDO PREPARADO (SINKING FUNDS) -->
+    <!-- ============================================================ -->
+    <div class="tab-pane fade" id="fundos">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">Planejar Gasto Sazonal</div>
+            <div class="card-body">
+              <form id="form-fundo">
+                <div class="mb-3"><label class="form-label">Nome do Gasto</label><input type="text" class="form-control" id="f-nome" placeholder="Ex: IPVA, Material Escolar" required></div>
+                <div class="mb-3"><label class="form-label">Valor Total Estimado (R$)</label><input type="number" class="form-control" id="f-valor" step="0.01" placeholder="0,00" required></div>
+                <div class="mb-3"><label class="form-label">Mês de Vencimento</label><input type="month" class="form-control" id="f-mes-vencimento" required></div>
+                <button type="submit" class="btn btn-primary w-100">Criar Fundo Preparado</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header"><span>Meus Fundos Preparados</span></div>
+            <div class="card-body p-3"><div id="lista-fundos"><p class="text-center text-secondary mb-0">Nenhum fundo preparado cadastrado.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- VALOR DO TEMPO -->
+    <!-- ============================================================ -->
+    <div class="tab-pane fade" id="preco-horas">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">1. Configurar o Valor da Sua Hora</div>
+            <div class="card-body">
+              <form id="form-valor-hora">
+                <div class="mb-3"><label class="form-label">Seu Salário Mensal Líquido (R$)</label><input type="number" class="form-control" id="h-salario" placeholder="Ex: 4000" required></div>
+                <div class="mb-3"><label class="form-label">Horas trabalhadas por mês</label><input type="number" class="form-control" id="h-horas" placeholder="Ex: 160" required></div>
+                <button type="submit" class="btn btn-primary w-100">Calcular Valor da Hora</button>
+              </form>
+              <div id="resultado-valor-hora" class="mt-3 font-mono text-center"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">2. Calculadora de Impulso de Compra</div>
+            <div class="card-body">
+              <div class="mb-3"><label class="form-label">Preço do Produto (R$)</label><input type="number" class="form-control" id="p-preco" placeholder="Ex: 500"></div>
+              <button class="btn btn-success w-100" onclick="calcularCustoEmHoras()">Analisar Custo em Horas</button>
+              <div id="resultado-custo-produto" class="mt-4 text-center"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- COFRE -->
+    <!-- ============================================================ -->
+    <div class="tab-pane fade" id="cofre">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card mb-4">
+            <div class="card-header">Guardar Dinheiro Economizado</div>
+            <div class="card-body">
+              <form id="form-gasto-evitado">
+                <div class="mb-3"><label class="form-label">Valor Poupado (R$)</label><input type="number" class="form-control" id="c-valor" step="0.01" placeholder="0,00" required></div>
+                <div class="mb-3"><label class="form-label">Descrição da Economia</label><input type="text" class="form-control" id="c-desc" placeholder="Ex: Levei marmita" required></div>
+                <button type="submit" class="btn btn-success w-100">Enviar para o Cofre</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">Progresso e Conquistas</div>
+            <div class="card-body">
+              <h5 class="text-center mb-4">Total Guardado: <span id="cofre-total" style="color:var(--green);" class="fw-bold">R$ 0</span></h5>
+              <div id="conquista-1" class="conquista-card bloqueada">
+                <div class="conquista-icone"><i class="bi bi-piggy-bank-fill"></i></div>
+                <div><div class="fw-bold" style="color:var(--text-primary);">Primeira Economia</div><div class="text-secondary">Guardou o primeiro valor no cofre.</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ASSISTENTE IA -->
+    <!-- ============================================================ -->
+    <div class="tab-pane fade" id="assistente">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-robot icon-glow me-2"></i> FINBOT — Núcleo de Análise Financeira</span>
+          <span class="status-pill"><span class="dot"></span> ONLINE</span>
+        </div>
+        <div class="card-body">
+          <div class="chat-box" id="caixa-chat">
+            <div class="balao ia">🤖 FinControl 2.0 no ar.
+
+Agora você tem Potes, Reserva de Emergência, Fundo Preparado e Check-in Semanal. Experimente me dizer algo como:
+"Gastei 50 reais com Uber hoje" ou "Recebi 3500 de salário ontem".</div>
+          </div>
+          <div class="d-flex gap-2 mb-3 flex-wrap">
+            <button class="btn btn-sm btn-secondary" onclick="enviarChat('Análise Geral do meu Painel')">📊 Analisar Meu Saldo Real</button>
+            <button class="btn btn-sm btn-secondary" onclick="enviarChat('Dicas para economizar')">💡 Sugestões de Economia</button>
+            <button class="btn btn-sm btn-secondary" onclick="enviarChat('Qual a previsão do meu mês?')">🔮 Previsão do Mês</button>
+          </div>
+          <div class="input-group">
+            <button class="btn btn-mic" type="button" id="btn-microfone" onclick="alternarVoz()" title="Falar por voz"><i class="bi bi-mic-fill"></i></button>
+            <input type="text" class="form-control" id="input-chat" placeholder="Digite um lançamento em linguagem natural ou uma pergunta...">
+            <button class="btn btn-primary px-4" onclick="processarChatInput()">Enviar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAÇÃO — ROBÔ -->
+<div class="modal fade" id="modalRoboConfirma" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center pt-4">
+        <div class="modal-robo-icone"><i class="bi bi-robot"></i></div>
+        <h5 class="mb-2">🤖 Antes de confirmar...</h5>
+        <p id="modalRoboTexto" class="text-secondary mb-4"></p>
+        <div class="d-flex gap-2">
+          <button class="btn btn-secondary w-100" id="btnRoboCancelar">Cancelar</button>
+          <button class="btn btn-danger w-100" id="btnRoboConfirmar">Confirmar mesmo assim</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CRONOGRAMA DE DÍVIDA -->
+<div class="modal fade" id="modalCronograma" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title" id="cronogramaTitulo"><i class="bi bi-calendar-week icon-glow"></i> Cronograma da Dívida</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="table-responsive"><table class="table table-hover mb-0">
+          <thead><tr><th>Mês</th><th>Parcela</th><th>Saldo Devedor Restante</th></tr></thead>
+          <tbody id="cronograma-corpo"></tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL APORTE RÁPIDO ("Salário caiu?") -->
+<div class="modal fade" id="modalAporteRapido" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title"><i class="bi bi-piggy-bank-fill" style="color:var(--amber);"></i> Pague-se Primeiro</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body text-center">
+        <p class="text-secondary">Separe uma parte do seu salário para a Reserva de Emergência antes de gastar com qualquer outra coisa.</p>
+        <div class="aporte-rapido-btns justify-content-center mb-3">
+          <button class="btn-aporte" onclick="aportarReserva(20); fecharModal('modalAporteRapido');">+ R$20</button>
+          <button class="btn-aporte" onclick="aportarReserva(50); fecharModal('modalAporteRapido');">+ R$50</button>
+          <button class="btn-aporte" onclick="aportarReserva(100); fecharModal('modalAporteRapido');">+ R$100</button>
+          <button class="btn-aporte" onclick="aportarReserva(200); fecharModal('modalAporteRapido');">+ R$200</button>
+        </div>
+        <div class="input-group">
+          <input type="number" class="form-control" id="aporte-rapido-custom" placeholder="Outro valor">
+          <button class="btn btn-success" onclick="aportarReservaModalCustom()">Guardar Agora</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CHECK-IN SEMANAL -->
+<div class="modal fade" id="modalCheckin" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title"><i class="bi bi-clipboard2-pulse icon-glow"></i> Check-in Semanal (15 min)</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="checkin-progresso">
+          <div class="barra ativa" id="ck-barra-1"></div><div class="barra" id="ck-barra-2"></div><div class="barra" id="ck-barra-3"></div><div class="barra" id="ck-barra-4"></div>
+        </div>
+
+        <div class="checkin-step ativo" id="ck-passo-1">
+          <h6>Passo 1 — Entradas da semana</h6>
+          <p class="text-secondary" style="font-size:.85rem;">Quanto entrou de dinheiro nos últimos 7 dias?</p>
+          <input type="number" class="form-control" id="ck-entrada" placeholder="R$ 0,00 (deixe em branco se nada entrou)">
+        </div>
+
+        <div class="checkin-step" id="ck-passo-2">
+          <h6>Passo 2 — Saídas da semana</h6>
+          <p class="text-secondary" style="font-size:.85rem;">Quanto saiu nos últimos 7 dias?</p>
+          <input type="number" class="form-control" id="ck-saida" placeholder="R$ 0,00 (deixe em branco se nada saiu)">
+        </div>
+
+        <div class="checkin-step" id="ck-passo-3">
+          <h6>Passo 3 — Contas que vencem nos próximos 7 dias</h6>
+          <div id="ck-lista-vencimentos" class="mt-2"></div>
+        </div>
+
+        <div class="checkin-step" id="ck-passo-4">
+          <h6>Passo 4 — Seu orçamento precisa de ajuste?</h6>
+          <div id="ck-status-potes" class="mb-3"></div>
+          <button class="btn btn-secondary w-100" data-bs-dismiss="modal" onclick="document.querySelector('[data-bs-target=\'#potes\']').click()">Ir para os Potes agora</button>
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+          <button class="btn btn-secondary" id="ck-btn-voltar" onclick="checkinVoltar()" style="display:none;">Voltar</button>
+          <button class="btn btn-primary flex-fill" id="ck-btn-proximo" onclick="checkinProximo()">Próximo</button>
+          <button class="btn btn-success flex-fill" id="ck-btn-concluir" onclick="concluirCheckin()" style="display:none;">Concluir Check-in</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BACKUPS NO GOOGLE DRIVE -->
+<div class="modal fade" id="modalDriveBackups" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title"><i class="bi bi-google icon-glow"></i> Backups no Google Drive</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <p class="text-secondary" style="font-size:.82rem;"><i class="bi bi-shield-lock-fill"></i> Estes arquivos ficam no seu próprio Google Drive, cifrados. O Google não consegue ler o conteúdo — só você, com sua senha mestra.</p>
+        <div id="lista-drive-backups"><p class="text-center text-secondary mb-0">Carregando...</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WIDGET FLUTUANTE — ROBÔ DE ALERTAS -->
+<div id="robo-alerta">
+  <button class="robo-fechar" onclick="fecharAlertaRobo()"><i class="bi bi-x-lg"></i></button>
+  <div class="robo-icone-wrap"><i class="bi bi-robot"></i></div>
+  <div class="robo-texto"><div class="robo-titulo" id="robo-alerta-titulo">Alerta</div><div id="robo-alerta-texto"></div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://cdn.jsdelivr.net/npm/dexie@3/dist/dexie.min.js"></script>
+
+<script>
+/* ==================================================================
+   UTILITÁRIOS GERAIS
+   ================================================================== */
+let privacidadeAtiva = localStorage.getItem('f_privacidade') === 'true';
+
+/* ==================================================================
+   🔐 FINCONTROL 3.0 — COFRE LOCAL CRIPTOGRAFADO (IndexedDB + AES-256-GCM)
+   ------------------------------------------------------------------
+   Arquitetura de segurança:
+   - Todos os dados financeiros são guardados no IndexedDB (via Dexie),
+     sem limite prático de ~5MB como no localStorage.
+   - Antes de qualquer gravação, o valor é cifrado com AES-256-GCM.
+   - A chave de cifragem NUNCA é salva em disco — ela é derivada da
+     Senha Mestra do usuário em tempo real (PBKDF2, 210.000 iterações,
+     SHA-256) e mantida só em memória (variável JS) enquanto o cofre
+     está desbloqueado. Ao fechar a aba ou clicar em "Bloquear", a
+     chave é descartada e os dados voltam a ficar ilegíveis.
+   - Isso é criptografia de ponta a ponta client-side: nem o próprio
+     código do app consegue ler os dados sem a senha correta, e não
+     existe nenhuma forma de recuperação de senha esquecida.
+   ================================================================== */
+const db = new Dexie('FinControlVault');
+db.version(1).stores({
+  contas: 'email',            // metadados NÃO sensíveis: email, nome, salt (PBKDF2) e um blob de verificação
+  cofre: '[conta+chave]'      // registros cifrados: {conta, chave, iv, dados}
+});
+
+let chaveMestraAtual = null;  // CryptoKey em memória — nunca persistida
+let contaAtiva = null;        // e-mail da conta atualmente desbloqueada
+
+function bufferParaBase64(buffer) { return btoa(String.fromCharCode(...new Uint8Array(buffer))); }
+function base64ParaBuffer(base64) { return Uint8Array.from(atob(base64), c => c.charCodeAt(0)); }
+
+/* Deriva uma chave AES-256-GCM a partir da senha mestra + salt (PBKDF2) */
+async function derivarChave(senha, saltBytes) {
+  const enc = new TextEncoder();
+  const material = await crypto.subtle.importKey('raw', enc.encode(senha), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: saltBytes, iterations: 210000, hash: 'SHA-256' },
+    material, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
+  );
+}
+async function criptografarValor(valor) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const dados = new TextEncoder().encode(JSON.stringify(valor));
+  const cifrado = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, chaveMestraAtual, dados);
+  return { iv: bufferParaBase64(iv), dados: bufferParaBase64(cifrado) };
+}
+async function descriptografarValor(registro) {
+  const iv = base64ParaBuffer(registro.iv);
+  const dadosCifrados = base64ParaBuffer(registro.dados);
+  const decifrado = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, chaveMestraAtual, dadosCifrados);
+  return JSON.parse(new TextDecoder().decode(decifrado));
+}
+
+/* Gravação/leitura assíncronas — usadas em todo o app no lugar do antigo localStorage.
+   Continuam com os mesmos nomes (salvar/carregar) para não exigir reescrever
+   cada módulo (transações, dívidas, potes, reserva, fundos...). */
+async function salvar(base, valor) {
+  if (!chaveMestraAtual || !contaAtiva) return false;
+  try {
+    const registro = await criptografarValor(valor);
+    await db.cofre.put({ conta: contaAtiva, chave: base, ...registro });
+    return true;
+  } catch (erro) {
+    console.error('Erro ao salvar no cofre criptografado:', erro);
+    avisarErroArmazenamento();
+    return false;
+  }
+}
+async function carregar(base, valorPadrao) {
+  if (!chaveMestraAtual || !contaAtiva) return valorPadrao;
+  try {
+    const registro = await db.cofre.get([contaAtiva, base]);
+    if (!registro) return valorPadrao;
+    return await descriptografarValor(registro);
+  } catch (erro) {
+    console.error(`Falha ao decifrar "${base}" (dado corrompido ou chave incorreta), usando valor padrão.`, erro);
+    return valorPadrao;
+  }
+}
+function avisarErroArmazenamento() {
+  exibirAlertaRobo('Armazenamento indisponível', 'O navegador recusou gravar no IndexedDB (pode estar em modo privado ou sem espaço). Exporte um backup para não perder seus dados mais recentes.', 'critico');
+}
+
+/* Recarrega todo o estado em memória a partir da conta desbloqueada —
+   chamado sempre após desbloquear, criar conta ou trocar de conta. */
+async function carregarTudoDoBanco() {
+  transacoes    = await carregar('transacoes', []);
+  dividas       = await carregar('dividas', []);
+  cofreTotal    = await carregar('cofre_total', 0);
+  valorHora     = await carregar('valor_hora', 0);
+  potes         = await carregar('potes', { renda: 0, fixas: 0, alimentacao: 0, dividas: 0, reserva: 0, lazer: 0 });
+  reserva       = await carregar('reserva', { total: 0, metaMeses: 6, custoFixoMensal: 0 });
+  fundos        = await carregar('fundos', []);
+  checkinUltimo = await carregar('checkin_ultimo', null);
+  chavesImportadas = await carregar('chaves_importadas', []);
+
+  inicializarPotesForm();
+  inicializarReservaForm();
+  atualizarTudo();
+  atualizarBadgeCheckin();
+}
+
+function formatarMoeda(valor, comCentavos = false) {
+  if (privacidadeAtiva) return 'R$ ••••';
+  const v = valor || 0;
+  if (comCentavos) return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+}
+
+const NOMES_MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+function chaveMesAtual() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); }
+function chaveMes(date) { return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0'); }
+function somarMeses(chave, n) { const [y, m] = chave.split('-').map(Number); const d = new Date(y, (m - 1) + n, 1); return chaveMes(d); }
+function diferencaMeses(chaveA, chaveB) { const [ya, ma] = chaveA.split('-').map(Number); const [yb, mb] = chaveB.split('-').map(Number); return (yb - ya) * 12 + (mb - ma); }
+function nomeMesChave(chave) { const [y, m] = chave.split('-').map(Number); return NOMES_MESES[m - 1] + ' de ' + y; }
+function fecharModal(id) { const el = document.getElementById(id); const inst = bootstrap.Modal.getInstance(el); if (inst) inst.hide(); }
+
+/* ==================================================================
+   ESTADO GLOBAL — só é preenchido de verdade após o cofre ser
+   desbloqueado (ver carregarTudoDoBanco). Antes disso, tudo começa
+   vazio para nunca haver dados na tela sem a senha mestra correta.
+   ================================================================== */
+let transacoes = [];
+let dividas    = [];
+let cofreTotal = 0;
+let valorHora  = 0;
+let potes      = { renda: 0, fixas: 0, alimentacao: 0, dividas: 0, reserva: 0, lazer: 0 };
+let reserva    = { total: 0, metaMeses: 6, custoFixoMensal: 0 };
+let fundos     = [];
+let checkinUltimo = null;
+
+let graficoApex = null, graficoPotes = null, graficoProjecao = null;
+let recognition = null, gravando = false;
+let checkinPassoAtual = 1;
+
+const DEFINICAO_POTES = [
+  { chave: 'fixas', nome: 'Contas Fixas', icone: 'bi-house-door-fill', cor: 'var(--cyan)' },
+  { chave: 'alimentacao', nome: 'Alimentação & Essenciais', icone: 'bi-cart-fill', cor: 'var(--green)' },
+  { chave: 'dividas', nome: 'Dívidas & Parcelas', icone: 'bi-credit-card-fill', cor: 'var(--pink)' },
+  { chave: 'reserva', nome: 'Reserva & Investimentos', icone: 'bi-bank2', cor: 'var(--purple)' },
+  { chave: 'lazer', nome: 'Lazer & Estilo de Vida', icone: 'bi-ticket-perforated-fill', cor: 'var(--amber)' }
+];
+
+document.addEventListener("DOMContentLoaded", () => {
+  aplicarTemaSalvo();
+  aplicarPrivacidadeSalva();
+  document.getElementById('t-data').valueAsDate = new Date();
+  document.getElementById('d-mes-inicio').value = chaveMesAtual();
+  document.getElementById('f-mes-vencimento').value = somarMeses(chaveMesAtual(), 6);
+  configurarReconhecimentoVoz();
+  iniciarParticulas();
+  inicializarFormularioCriarConta();
+  inicializarFormularioDesbloquear();
+  iniciarAppSeguro();
+});
+
+/* ==================================================================
+   🌗 TEMA CLARO / ESCURO
+   ================================================================== */
+function aplicarTemaSalvo() {
+  const tema = localStorage.getItem('f_tema') || 'dark';
+  document.documentElement.setAttribute('data-theme', tema);
+  document.getElementById('btn-tema').innerHTML = tema === 'dark' ? '<i class="bi bi-moon-stars-fill"></i>' : '<i class="bi bi-sun-fill"></i>';
+}
+function alternarTema() {
+  const atual = document.documentElement.getAttribute('data-theme');
+  const novo = atual === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', novo);
+  localStorage.setItem('f_tema', novo);
+  document.getElementById('btn-tema').innerHTML = novo === 'dark' ? '<i class="bi bi-moon-stars-fill"></i>' : '<i class="bi bi-sun-fill"></i>';
+}
+
+/* ==================================================================
+   👁️ MÁSCARA DE PRIVACIDADE — oculta todos os valores em R$
+   ================================================================== */
+function aplicarPrivacidadeSalva() {
+  document.getElementById('btn-privacidade').innerHTML = privacidadeAtiva ? '<i class="bi bi-eye-slash-fill"></i>' : '<i class="bi bi-eye-fill"></i>';
+  document.body.classList.toggle('valores-ocultos', privacidadeAtiva);
+}
+function alternarPrivacidade() {
+  privacidadeAtiva = !privacidadeAtiva;
+  localStorage.setItem('f_privacidade', privacidadeAtiva);
+  aplicarPrivacidadeSalva();
+  atualizarTudo(); atualizarPotesUI(); atualizarReservaUI(); atualizarFundosUI();
+}
+
+/* ==================================================================
+   💾 EXPORTAR / IMPORTAR BACKUP (JSON)
+   ================================================================== */
+/* O backup exportado contém apenas os blobs JÁ CIFRADOS (iv + dados em
+   AES-256-GCM) mais os metadados não sensíveis da conta (email, nome,
+   salt). É seguro guardar esse arquivo em qualquer lugar — Google Drive,
+   pendrive, e-mail — porque sem a senha mestra ele é ilegível. */
+async function exportarBackup() {
+  if (!contaAtiva) { alert('Desbloqueie uma conta antes de exportar.'); return; }
+  const conta = await db.contas.get(contaAtiva);
+  const linhas = await db.cofre.where('conta').equals(contaAtiva).toArray();
+  const pacote = { versao: 'fincontrol-3.0', conta, dados: linhas };
+  const blob = new Blob([JSON.stringify(pacote)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `fincontrol-backup-cifrado-${contaAtiva}-${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+function importarBackup(arquivo) {
+  if (!arquivo) return;
+  const leitor = new FileReader();
+  leitor.onload = async (e) => {
+    try {
+      const pacote = JSON.parse(e.target.result);
+      if (pacote.versao === 'fincontrol-3.0' && pacote.conta && pacote.dados) {
+        await db.contas.put(pacote.conta);
+        await db.cofre.bulkPut(pacote.dados);
+        alert(`Backup criptografado da conta "${pacote.conta.nome}" importado! A página vai recarregar — desbloqueie com a senha mestra dessa conta.`);
+        location.reload();
+      } else {
+        // Compatibilidade com backups antigos do FinControl 2.0 (JSON em texto puro)
+        if (!contaAtiva) { alert('Este é um backup antigo (não criptografado) do FinControl 2.0. Desbloqueie ou crie uma conta primeiro, depois importe de novo para protegê-lo com sua senha mestra.'); return; }
+        for (const base of Object.keys(pacote)) { if (pacote[base] !== null && pacote[base] !== undefined) await salvar(base, pacote[base]); }
+        alert('Backup antigo importado e agora protegido com criptografia! A página vai recarregar.');
+        location.reload();
+      }
+    } catch (err) { alert('Arquivo de backup inválido.'); }
+  };
+  leitor.readAsText(arquivo);
+}
+
+/* ==================================================================
+   📲 PWA — INSTALAÇÃO E SERVICE WORKER (offline completo)
+   ================================================================== */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(err => console.warn('Service Worker não pôde ser registrado:', err));
+  });
+}
+
+let promptInstalacaoAdiado = null;
+window.addEventListener('beforeinstallprompt', (evento) => {
+  evento.preventDefault();
+  promptInstalacaoAdiado = evento;
+  document.getElementById('btn-instalar-app').style.display = 'flex';
+});
+window.addEventListener('appinstalled', () => {
+  promptInstalacaoAdiado = null;
+  document.getElementById('btn-instalar-app').style.display = 'none';
+});
+
+function ehIOS() { return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream; }
+function rodandoComoPWA() { return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
+
+async function instalarApp() {
+  if (promptInstalacaoAdiado) {
+    promptInstalacaoAdiado.prompt();
+    await promptInstalacaoAdiado.userChoice;
+    promptInstalacaoAdiado = null;
+    document.getElementById('btn-instalar-app').style.display = 'none';
+    return;
+  }
+  if (ehIOS()) {
+    alert('Para instalar no iPhone/iPad: toque no ícone de Compartilhar (□↑) na barra do Safari e escolha "Adicionar à Tela de Início".');
+  } else {
+    alert('Seu navegador ainda não liberou a instalação automática. Procure a opção "Instalar aplicativo" no menu do navegador (geralmente nos 3 pontinhos).');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (ehIOS() && !rodandoComoPWA()) document.getElementById('btn-instalar-app').style.display = 'flex';
+});
+
+/* ==================================================================
+   ☁️ BACKUP EM NUVEM PRIVADA — GOOGLE DRIVE (ZERO-KNOWLEDGE)
+   ------------------------------------------------------------------
+   Só o arquivo JÁ CIFRADO (AES-256-GCM) é enviado ao Drive — o mesmo
+   formato usado no botão "Exportar Backup". O Google armazena um
+   blob opaco: sem a senha mestra, o conteúdo é ilegível mesmo para
+   o próprio Google. Usamos o escopo mínimo "drive.file", que só dá
+   acesso aos arquivos que o PRÓPRIO FinControl cria — nunca ao resto
+   do Drive do usuário.
+   ------------------------------------------------------------------
+   ⚙️ CONFIGURAÇÃO NECESSÁRIA (feita uma vez, de graça, pelo dono do app):
+   1. Acesse https://console.cloud.google.com/ → crie um projeto.
+   2. Ative a "Google Drive API" em "APIs e Serviços".
+   3. Em "Credenciais" → "Criar credenciais" → "ID do cliente OAuth"
+      → tipo "Aplicativo da Web" → em "Origens JavaScript autorizadas"
+      coloque a URL onde o app está publicado (ex: https://SEUUSUARIO.github.io).
+   4. Copie o Client ID gerado e cole na constante abaixo.
+   Sem isso configurado, os botões do Google Drive mostram um aviso
+   pedindo essa configuração — o resto do app funciona normalmente.
+   ================================================================== */
+const GOOGLE_CLIENT_ID = 'SEU_CLIENT_ID_AQUI.apps.googleusercontent.com';
+const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+
+let tokenClientGoogle = null;
+let tokenAcessoGoogle = null;
+
+function googleConfigurado() { return GOOGLE_CLIENT_ID && !GOOGLE_CLIENT_ID.includes('SEU_CLIENT_ID_AQUI'); }
+
+function conectarGoogleDrive() {
+  if (!googleConfigurado()) {
+    alert('O backup no Google Drive ainda não foi configurado pelo administrador deste app (falta o Client ID do Google Cloud). Veja o comentário "GOOGLE_CLIENT_ID" no código-fonte para ativar.');
+    return;
+  }
+  if (!contaAtiva) { alert('Desbloqueie seu cofre antes de conectar ao Google Drive.'); return; }
+  if (typeof google === 'undefined' || !google.accounts) { alert('O serviço do Google ainda está carregando. Aguarde alguns segundos e tente de novo.'); return; }
+  if (!tokenClientGoogle) {
+    tokenClientGoogle = google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope: GOOGLE_DRIVE_SCOPE,
+      callback: (resposta) => {
+        if (resposta.error) { alert('Não foi possível conectar ao Google Drive: ' + resposta.error); return; }
+        tokenAcessoGoogle = resposta.access_token;
+        document.getElementById('btn-drive-conectar').innerHTML = '<i class="bi bi-check-circle-fill" style="color:var(--green);"></i> Conectado ao Drive';
+        document.getElementById('btn-drive-enviar').style.display = 'block';
+        document.getElementById('btn-drive-restaurar').style.display = 'block';
+      }
+    });
+  }
+  tokenClientGoogle.requestAccessToken();
+}
+
+async function enviarBackupParaDrive() {
+  if (!tokenAcessoGoogle) { alert('Conecte-se ao Google Drive primeiro.'); return; }
+  const conta = await db.contas.get(contaAtiva);
+  const linhas = await db.cofre.where('conta').equals(contaAtiva).toArray();
+  const pacote = { versao: 'fincontrol-3.0', conta, dados: linhas };
+  const nomeArquivo = `fincontrol-backup-${contaAtiva}-${new Date().toISOString().split('T')[0]}.json`;
+
+  const metadados = { name: nomeArquivo, mimeType: 'application/json' };
+  const corpoMultipart =
+    `--fincontrol_boundary\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadados)}\r\n` +
+    `--fincontrol_boundary\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(pacote)}\r\n--fincontrol_boundary--`;
+
+  try {
+    const resposta = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${tokenAcessoGoogle}`, 'Content-Type': 'multipart/related; boundary=fincontrol_boundary' },
+      body: corpoMultipart
+    });
+    if (!resposta.ok) throw new Error(await resposta.text());
+    exibirAlertaRobo('Backup enviado', 'Seu backup cifrado foi salvo com sucesso no seu Google Drive.', 'atencao');
+  } catch (erro) {
+    console.error('Erro ao enviar backup ao Drive:', erro);
+    alert('Não foi possível enviar o backup ao Google Drive. Tente novamente.');
+  }
+}
+
+async function listarBackupsDoDrive() {
+  if (!tokenAcessoGoogle) { alert('Conecte-se ao Google Drive primeiro.'); return; }
+  const modal = new bootstrap.Modal(document.getElementById('modalDriveBackups'));
+  document.getElementById('lista-drive-backups').innerHTML = '<p class="text-center text-secondary mb-0">Carregando...</p>';
+  modal.show();
+  try {
+    const resposta = await fetch(`https://www.googleapis.com/drive/v3/files?q=name contains 'fincontrol-backup'&fields=files(id,name,createdTime)&orderBy=createdTime desc`, {
+      headers: { 'Authorization': `Bearer ${tokenAcessoGoogle}` }
+    });
+    const dados = await resposta.json();
+    const arquivos = dados.files || [];
+    if (arquivos.length === 0) { document.getElementById('lista-drive-backups').innerHTML = '<p class="text-center text-secondary mb-0">Nenhum backup encontrado no Drive ainda.</p>'; return; }
+    document.getElementById('lista-drive-backups').innerHTML = arquivos.map(a => `
+      <div class="drive-backup-item">
+        <div><div class="nome">${a.name}</div><div class="data">${new Date(a.createdTime).toLocaleString('pt-BR')}</div></div>
+        <button class="btn btn-sm btn-primary" onclick="restaurarBackupDoDrive('${a.id}')"><i class="bi bi-cloud-download-fill"></i> Restaurar</button>
+      </div>`).join('');
+  } catch (erro) {
+    console.error('Erro ao listar backups do Drive:', erro);
+    document.getElementById('lista-drive-backups').innerHTML = '<p class="text-center text-danger mb-0">Erro ao acessar o Google Drive.</p>';
+  }
+}
+
+async function restaurarBackupDoDrive(idArquivo) {
+  try {
+    const resposta = await fetch(`https://www.googleapis.com/drive/v3/files/${idArquivo}?alt=media`, {
+      headers: { 'Authorization': `Bearer ${tokenAcessoGoogle}` }
+    });
+    const pacote = await resposta.json();
+    if (pacote.versao !== 'fincontrol-3.0' || !pacote.conta || !pacote.dados) throw new Error('formato inválido');
+    await db.contas.put(pacote.conta);
+    await db.cofre.bulkPut(pacote.dados);
+    alert(`Backup da conta "${pacote.conta.nome}" restaurado do Drive! A página vai recarregar — desbloqueie com a senha mestra dessa conta.`);
+    location.reload();
+  } catch (erro) {
+    console.error('Erro ao restaurar backup do Drive:', erro);
+    alert('Não foi possível restaurar este backup.');
+  }
+}
+
+/* ==================================================================
+   CRUD — TRANSAÇÕES
+   ================================================================== */
+document.getElementById('form-transacao').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const novaTransacao = {
+    id: Date.now(), tipo: document.getElementById('t-tipo').value, valor: parseFloat(document.getElementById('t-valor').value),
+    categoria: document.getElementById('t-categoria').value, data: document.getElementById('t-data').value, desc: document.getElementById('t-desc').value
+  };
+  const finalizarLancamento = () => {
+    transacoes.push(novaTransacao); salvarTransacoes();
+    document.getElementById('form-transacao').reset();
+    document.getElementById('t-data').valueAsDate = new Date();
+    atualizarTudo();
+  };
+  if (novaTransacao.tipo === 'gasto' && ehCompraDeAltoValor(novaTransacao.valor)) {
+    const saldoAtual = calcularSaldoAtual();
+    const textoAlerta = `Esse gasto de <strong>${formatarMoeda(novaTransacao.valor)}</strong> é considerado alto para o seu momento financeiro atual (saldo: ${formatarMoeda(saldoAtual, true)}). Isso pode comprometer seu orçamento nos próximos dias. Tem certeza que deseja continuar?`;
+    confirmarComRobo(textoAlerta, finalizarLancamento);
+  } else { finalizarLancamento(); }
+});
+
+function deletarTransacao(id){ transacoes = transacoes.filter(t => t.id !== id); salvarTransacoes(); atualizarTudo(); }
+function salvarTransacoes(){ salvar('transacoes', transacoes); }
+function calcularSaldoAtual() { let g=0,s=0; transacoes.forEach(t => t.tipo==='ganho' ? g+=t.valor : s+=t.valor); return g-s; }
+function calcularRendaMediaMensal() {
+  const ganhos = transacoes.filter(t => t.tipo === 'ganho');
+  if (ganhos.length === 0) return potes.renda || 0;
+  const meses = new Set(ganhos.map(t => t.data.slice(0, 7)));
+  return ganhos.reduce((s, t) => s + t.valor, 0) / Math.max(meses.size, 1);
+}
+function ehCompraDeAltoValor(valor) {
+  const renda = calcularRendaMediaMensal(); const saldo = calcularSaldoAtual();
+  const limitePorRenda = renda > 0 ? renda * 0.3 : Infinity;
+  const limitePorSaldo = saldo > 0 ? saldo * 0.4 : 0;
+  return valor >= Math.min(limitePorRenda, 800) || (saldo > 0 && valor >= limitePorSaldo) || (saldo <= 0);
+}
+
+/* ==================================================================
+   ❤️ SCORE DE SAÚDE FINANCEIRA (0 a 100)
+   ------------------------------------------------------------------
+   Combina três pilares clássicos de planejamento financeiro pessoal:
+   - Reserva de Emergência (até 35 pts): quão perto você está da meta.
+   - Taxa de Poupança do mês (até 35 pts): % da renda do mês que sobrou
+     sem ser gasta — referência de mercado: poupar 20%+ é considerado
+     saudável, por isso 20% já dá a pontuação máxima deste pilar.
+   - Comprometimento de Renda com Dívidas (até 30 pts, invertido):
+     quanto menor a fatia da renda presa em parcelas fixas, melhor —
+     referência de mercado: acima de 30% da renda é considerado
+     endividamento de risco, por isso 30%+ zera este pilar.
+   ================================================================== */
+function calcularScoreSaude() {
+  const metaReserva = (reserva.custoFixoMensal || 0) * (reserva.metaMeses || 6);
+  const percReserva = metaReserva > 0 ? Math.min(1, (reserva.total || 0) / metaReserva) : 0;
+  const pontosReserva = percReserva * 35;
+
+  const hoje = new Date();
+  const transacoesDoMes = transacoes.filter(t => { const d = new Date(t.data + 'T00:00:00'); return d.getMonth() === hoje.getMonth() && d.getFullYear() === hoje.getFullYear(); });
+  const ganhosMes = transacoesDoMes.filter(t => t.tipo === 'ganho').reduce((s, t) => s + t.valor, 0);
+  const gastosMes = transacoesDoMes.filter(t => t.tipo === 'gasto').reduce((s, t) => s + t.valor, 0);
+  const taxaPoupanca = ganhosMes > 0 ? Math.max(0, (ganhosMes - gastosMes) / ganhosMes) : 0;
+  const pontosPoupanca = Math.min(1, taxaPoupanca / 0.20) * 35;
+
+  const rendaMedia = calcularRendaMediaMensal();
+  const dividasAtivas = dividas.filter(d => d.parcelasPagas < d.parcelas);
+  const totalParcelas = dividasAtivas.reduce((s, d) => s + d.valorParcela, 0);
+  const percComprometido = rendaMedia > 0 ? totalParcelas / rendaMedia : 0;
+  const pontosDividas = Math.max(0, 1 - Math.min(1, percComprometido / 0.30)) * 30;
+
+  return {
+    total: Math.round(pontosReserva + pontosPoupanca + pontosDividas),
+    reserva: { pontos: Math.round(pontosReserva), max: 35, percentual: Math.round(percReserva * 100) },
+    poupanca: { pontos: Math.round(pontosPoupanca), max: 35, percentual: Math.round(taxaPoupanca * 100) },
+    dividas: { pontos: Math.round(pontosDividas), max: 30, percentual: Math.round(percComprometido * 100) }
+  };
+}
+
+function classificarScore(score) {
+  if (score >= 90) return { texto: 'Excelente', cor: 'var(--green)' };
+  if (score >= 70) return { texto: 'Saudável', cor: 'var(--cyan)' };
+  if (score >= 40) return { texto: 'Em Progresso', cor: 'var(--amber)' };
+  return { texto: 'Atenção', cor: 'var(--pink)' };
+}
+
+let graficoScoreSaude = null;
+function renderizarScoreSaude() {
+  const score = calcularScoreSaude();
+  const classificacao = classificarScore(score.total);
+
+  document.getElementById('score-classificacao').innerText = `${score.total}/100 — ${classificacao.texto}`;
+  document.getElementById('score-classificacao').style.color = classificacao.cor;
+
+  document.getElementById('score-reserva-pts').innerText = `${score.reserva.pontos}/${score.reserva.max} pts`;
+  document.getElementById('score-reserva-barra').style.width = `${(score.reserva.pontos / score.reserva.max) * 100}%`;
+  document.getElementById('score-poupanca-pts').innerText = `${score.poupanca.pontos}/${score.poupanca.max} pts (${score.poupanca.percentual}%)`;
+  document.getElementById('score-poupanca-barra').style.width = `${(score.poupanca.pontos / score.poupanca.max) * 100}%`;
+  document.getElementById('score-dividas-pts').innerText = `${score.dividas.pontos}/${score.dividas.max} pts (${score.dividas.percentual}% da renda)`;
+  document.getElementById('score-dividas-barra').style.width = `${(score.dividas.pontos / score.dividas.max) * 100}%`;
+
+  const dicas = [];
+  if (score.reserva.pontos < score.reserva.max * 0.5) dicas.push('reforce sua Reserva de Emergência');
+  if (score.poupanca.pontos < score.poupanca.max * 0.5) dicas.push('tente poupar uma fatia maior da renda este mês');
+  if (score.dividas.pontos < score.dividas.max * 0.5) dicas.push('priorize quitar dívidas no Comparador de Estratégias');
+  document.getElementById('score-dica').innerText = dicas.length > 0 ? `💡 Para melhorar seu score: ${dicas.join('; ')}.` : '✅ Seus três pilares financeiros estão equilibrados. Continue assim!';
+
+  const corResolvida = getComputedStyle(document.documentElement).getPropertyValue(classificacao.cor.match(/--[a-z]+/)[0]).trim() || '#00e5ff';
+  const options = {
+    chart: { type: 'radialBar', height: 200, background: 'transparent' },
+    series: [score.total],
+    labels: ['Score'],
+    colors: [corResolvida],
+    plotOptions: { radialBar: { hollow: { size: '60%' }, dataLabels: { name: { show: false }, value: { fontSize: '22px', fontWeight: 700, color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary'), formatter: (v) => Math.round(v) } } } }
+  };
+  if (graficoScoreSaude) { graficoScoreSaude.updateOptions(options); }
+  else { graficoScoreSaude = new ApexCharts(document.querySelector("#graficoScoreSaude"), options); graficoScoreSaude.render(); }
+}
+
+/* ==================================================================
+   💳 MÓDULO AVANÇADO DE DÍVIDAS
+   ================================================================== */
+document.getElementById('form-divida').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const total = parseFloat(document.getElementById('d-valor').value);
+  const parcelas = parseInt(document.getElementById('d-parcelas').value);
+  const valorParcela = total / parcelas;
+  const nome = document.getElementById('d-nome').value;
+  const categoria = document.getElementById('d-categoria').value;
+  const mesInicio = document.getElementById('d-mes-inicio').value || chaveMesAtual();
+  const taxaJuros = parseFloat(document.getElementById('d-taxa-juros').value) || 0;
+
+  const finalizarDivida = () => {
+    dividas.push({ id: Date.now(), nome, categoria, valor: total, parcelas, parcelasPagas: 0, valorParcela, mesInicio, taxaJuros });
+    salvar('dividas', dividas);
+    document.getElementById('form-divida').reset();
+    document.getElementById('d-mes-inicio').value = chaveMesAtual();
+    atualizarTudo();
+  };
+
+  const rendaMensal = calcularRendaMediaMensal();
+  const percentualComprometido = rendaMensal > 0 ? (valorParcela / rendaMensal) * 100 : 0;
+  if (percentualComprometido >= 20 || parcelas >= 6) {
+    const textoAlerta = `A dívida "<strong>${nome}</strong>" vai gerar parcelas de <strong>${formatarMoeda(valorParcela)}</strong> por <strong>${parcelas} meses</strong>${rendaMensal > 0 ? `, comprometendo cerca de <strong>${percentualComprometido.toFixed(0)}%</strong> da sua renda mensal média` : ''}. Isso vai afetar seu orçamento por um bom tempo. Deseja continuar mesmo assim?`;
+    confirmarComRobo(textoAlerta, finalizarDivida);
+  } else { finalizarDivida(); }
+});
+
+function pagarParcela(id) {
+  const divida = dividas.find(d => d.id === id);
+  if (divida && divida.parcelasPagas < divida.parcelas) {
+    const proximaParcelaNum = divida.parcelasPagas + 1;
+    const nomeSugestao = `Parcela ${proximaParcelaNum}/${divida.parcelas} - ${divida.nome}`;
+    const nomeGastoDigitado = prompt("Escreva o nome/descrição para este gasto da parcela:", nomeSugestao);
+    if (nomeGastoDigitado === null) return;
+    divida.parcelasPagas++;
+    transacoes.push({ id: Date.now(), tipo: 'gasto', valor: divida.valorParcela, categoria: 'Outros', data: new Date().toISOString().split('T')[0], desc: nomeGastoDigitado.trim() || nomeSugestao });
+    salvarTransacoes();
+    salvar('dividas', dividas);
+    atualizarTudo();
+  }
+}
+function deletarDivida(id){ dividas = dividas.filter(d => d.id !== id); salvar('dividas', dividas); atualizarTudo(); }
+
+function renderizarDividas() {
+  const container = document.getElementById('lista-dividas');
+  if (dividas.length === 0) { container.innerHTML = '<p class="text-center text-secondary mb-0">Nenhuma dívida cadastrada.</p>'; return; }
+
+  container.innerHTML = dividas.map(d => {
+    const quitada = d.parcelasPagas >= d.parcelas;
+    const restantes = d.parcelas - d.parcelasPagas;
+    const valorRestante = d.valorParcela * restantes;
+    const percProgresso = (d.parcelasPagas / d.parcelas) * 100;
+    const dataQuitacao = nomeMesChave(somarMeses(d.mesInicio, d.parcelas - 1));
+
+    return `<div class="divida-card ${quitada ? 'quitada' : ''}">
+      <div class="divida-topo">
+        <div><div class="divida-nome">${d.nome}</div><span class="divida-badge-cat">${d.categoria || 'Outros'}</span></div>
+        ${quitada ? '<span style="color:var(--green);" class="fw-bold"><i class="bi bi-check-all"></i> Quitada</span>' : ''}
+      </div>
+      <div class="progresso-wrap"><div class="progresso-fill" style="width:${percProgresso}%; background:${quitada ? 'var(--grad-green)' : 'var(--grad-cyan)'};"></div></div>
+      <div class="divida-grid">
+        <div class="item"><b>Progresso</b><span>${d.parcelasPagas}/${d.parcelas}</span></div>
+        <div class="item"><b>Valor da Parcela</b><span>${formatarMoeda(d.valorParcela)}</span></div>
+        <div class="item"><b>Valor Restante</b><span style="color:${quitada ? 'var(--green)' : 'var(--amber)'};">${quitada ? formatarMoeda(0) : formatarMoeda(valorRestante)}</span></div>
+        <div class="item"><b>Quitação Estimada</b><span style="font-size:.8rem;">${quitada ? '—' : dataQuitacao}</span></div>
+        <div class="item"><b>Taxa de Juros</b><span style="font-size:.85rem;">${d.taxaJuros ? d.taxaJuros.toFixed(2) + '% a.m.' : 'Não informada'} ${!quitada ? `<i class="bi bi-pencil-fill" style="cursor:pointer; font-size:.7rem; color:var(--text-secondary);" onclick="editarTaxaJuros(${d.id})"></i>` : ''}</span></div>
+      </div>
+      <div class="d-flex gap-2 mt-2">
+        ${!quitada ? `<button class="btn btn-sm btn-success p-1 px-2" onclick="pagarParcela(${d.id})"><i class="bi bi-check-circle"></i> Pagar Parcela</button>
+        <button class="btn btn-sm btn-secondary p-1 px-2" onclick="abrirCronogramaDivida(${d.id})"><i class="bi bi-calendar-week"></i> Cronograma</button>` : ''}
+        <button class="btn btn-sm btn-outline-danger p-1 px-2 ms-auto" onclick="deletarDivida(${d.id})"><i class="bi bi-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function editarTaxaJuros(id) {
+  const divida = dividas.find(d => d.id === id);
+  if (!divida) return;
+  const novaTaxa = parseFloat(prompt(`Taxa de juros mensal de "${divida.nome}" (% ao mês, ex: 2.5):`, divida.taxaJuros || 0));
+  if (isNaN(novaTaxa) || novaTaxa < 0) return;
+  divida.taxaJuros = novaTaxa;
+  salvar('dividas', dividas);
+  atualizarTudo();
+}
+
+/* ==================================================================
+   ⚔️ COMPARADOR DE ESTRATÉGIAS DE QUITAÇÃO — BOLA DE NEVE x AVALANCHE
+   ------------------------------------------------------------------
+   Bola de Neve: quita sempre a dívida de MENOR saldo primeiro
+   (motivação por vitórias rápidas). Avalanche: quita sempre a de
+   MAIOR taxa de juros primeiro (menor custo total de juros). Em
+   ambos os métodos, assim que uma dívida é quitada, sua parcela
+   mínima "roda" como dinheiro extra para a próxima da fila —
+   esse é o efeito clássico da bola de neve rolando ladeira abaixo.
+   ================================================================== */
+function simularQuitacao(dividasAtivas, valorExtraMensal, estrategia) {
+  let saldos = dividasAtivas.map(d => ({
+    nome: d.nome,
+    saldo: d.valorParcela * (d.parcelas - d.parcelasPagas),
+    parcelaMinima: d.valorParcela,
+    taxaMensal: (d.taxaJuros || 0) / 100
+  }));
+
+  let mes = 0, jurosTotalPago = 0;
+  const MAX_MESES = 600; // trava de segurança contra loop infinito quando o valor extra não é suficiente
+
+  while (saldos.some(d => d.saldo > 0.01) && mes < MAX_MESES) {
+    mes++;
+
+    // 1. Aplica juros do mês sobre o saldo ainda devido de cada dívida ativa
+    saldos.forEach(d => { if (d.saldo > 0.01) { const juros = d.saldo * d.taxaMensal; d.saldo += juros; jurosTotalPago += juros; } });
+
+    // 2. Paga a parcela mínima de todas as dívidas ainda ativas
+    saldos.forEach(d => { if (d.saldo > 0.01) d.saldo -= Math.min(d.parcelaMinima, d.saldo); });
+
+    // 3. "Bônus" acumulado = soma das parcelas mínimas de tudo que já foi quitado até agora
+    const extraAcumulado = saldos.filter(d => d.saldo <= 0.01).reduce((s, d) => s + d.parcelaMinima, 0);
+
+    // 4. Direciona o extra mensal + o bônus acumulado para a dívida-alvo da estratégia escolhida
+    const ordenadas = saldos.filter(d => d.saldo > 0.01)
+      .sort((a, b) => estrategia === 'avalanche' ? b.taxaMensal - a.taxaMensal : a.saldo - b.saldo);
+    let disponivel = valorExtraMensal + extraAcumulado;
+    for (const d of ordenadas) {
+      if (disponivel <= 0) break;
+      const pagamento = Math.min(disponivel, d.saldo);
+      d.saldo -= pagamento;
+      disponivel -= pagamento;
+    }
+  }
+
+  return { meses: mes, jurosTotalPago, estourouLimite: mes >= MAX_MESES };
+}
+
+function compararEstrategiasQuitacao() {
+  const dividasAtivas = dividas.filter(d => d.parcelasPagas < d.parcelas);
+  const container = document.getElementById('resultado-comparador');
+
+  if (dividasAtivas.length === 0) {
+    container.innerHTML = '<p class="text-secondary text-center mb-0">Você não tem dívidas ativas para comparar. 🎉</p>';
+    return;
+  }
+
+  const extraMensal = parseFloat(document.getElementById('comparador-extra-mensal').value) || 0;
+  const bolaDeNeve = simularQuitacao(dividasAtivas, extraMensal, 'bola_de_neve');
+  const avalanche = simularQuitacao(dividasAtivas, extraMensal, 'avalanche');
+
+  const temJurosInformados = dividasAtivas.some(d => d.taxaJuros > 0);
+  const maisRapida = bolaDeNeve.meses <= avalanche.meses ? 'bola_de_neve' : 'avalanche';
+  const maisBarata = bolaDeNeve.jurosTotalPago <= avalanche.jurosTotalPago ? 'bola_de_neve' : 'avalanche';
+
+  const cardEstrategia = (nome, chave, resultado, icone) => `
+    <div class="col-md-6">
+      <div class="estrategia-card ${chave === maisBarata ? 'vencedora' : ''}">
+        <h6><i class="bi ${icone}"></i> ${nome} ${chave === maisBarata ? '<span class="badge" style="background:rgba(0,255,171,.15); color:var(--green); font-size:.65rem;">Economiza mais</span>' : ''}</h6>
+        <div class="estrategia-metrica"><span>Tempo até quitar tudo</span><span class="font-mono fw-bold">${resultado.meses} meses</span></div>
+        <div class="estrategia-metrica"><span>Data estimada de quitação total</span><span class="font-mono">${nomeMesChave(somarMeses(chaveMesAtual(), resultado.meses - 1))}</span></div>
+        <div class="estrategia-metrica"><span>Total pago em juros</span><span class="font-mono" style="color:var(--pink);">${temJurosInformados ? formatarMoeda(resultado.jurosTotalPago) : 'sem taxa informada'}</span></div>
+      </div>
+    </div>`;
+
+  let html = '<div class="row g-3">';
+  html += cardEstrategia('Bola de Neve', 'bola_de_neve', bolaDeNeve, 'bi-snow2');
+  html += cardEstrategia('Avalanche', 'avalanche', avalanche, 'bi-cloud-lightning-rain-fill');
+  html += '</div>';
+
+  const diferencaMesesTotal = Math.abs(bolaDeNeve.meses - avalanche.meses);
+  const diferencaJuros = Math.abs(bolaDeNeve.jurosTotalPago - avalanche.jurosTotalPago);
+
+  html += `<p class="text-secondary mt-3 mb-0" style="font-size:.85rem;">`;
+  if (!temJurosInformados) {
+    html += `💡 Como nenhuma dívida tem taxa de juros informada, os dois métodos terminam no mesmo prazo — a diferença real da Avalanche só aparece quando as taxas de juros são cadastradas (clique no lápis ✏️ ao lado de "Taxa de Juros" em cada dívida).`;
+  } else if (diferencaMesesTotal === 0 && diferencaJuros < 1) {
+    html += `Neste cenário, as duas estratégias praticamente empatam. Vá de Bola de Neve se motivação for o mais importante.`;
+  } else {
+    html += `🏆 A <strong>${maisBarata === 'avalanche' ? 'Avalanche' : 'Bola de Neve'}</strong> economiza aproximadamente <strong>${formatarMoeda(diferencaJuros)}</strong> em juros${diferencaMesesTotal > 0 ? ` e termina ${diferencaMesesTotal} ${diferencaMesesTotal === 1 ? 'mês' : 'meses'} ${maisRapida === maisBarata ? 'antes' : 'depois'}` : ''} em comparação com a outra estratégia neste cenário.`;
+  }
+  html += `</p>`;
+
+  container.innerHTML = html;
+}
+
+function abrirCronogramaDivida(id) {
+  const divida = dividas.find(d => d.id === id);
+  if (!divida) return;
+  document.getElementById('cronogramaTitulo').innerHTML = `<i class="bi bi-calendar-week icon-glow"></i> Cronograma — ${divida.nome}`;
+  let linhas = '';
+  for (let i = 1; i <= divida.parcelas; i++) {
+    const chaveParcela = somarMeses(divida.mesInicio, i - 1);
+    const paga = i <= divida.parcelasPagas;
+    const saldoDevedor = Math.max(0, divida.valorParcela * (divida.parcelas - i));
+    linhas += `<tr>
+      <td>${nomeMesChave(chaveParcela)}</td>
+      <td>${i}ª de ${divida.parcelas} — ${formatarMoeda(divida.valorParcela)} ${paga ? '<span class="badge" style="background:rgba(0,255,171,.15); color:var(--green);">Paga</span>' : '<span class="badge" style="background:rgba(255,176,32,.15); color:var(--amber);">A pagar</span>'}</td>
+      <td style="font-weight:700; color:${saldoDevedor === 0 ? 'var(--green)' : 'var(--amber)'};">${saldoDevedor === 0 ? 'Quitado' : formatarMoeda(saldoDevedor)}</td>
+    </tr>`;
+  }
+  document.getElementById('cronograma-corpo').innerHTML = linhas;
+  new bootstrap.Modal(document.getElementById('modalCronograma')).show();
+}
+
+function renderizarGraficoProjecao() {
+  const meses = []; const valores = [];
+  const dividasAtivas = dividas.filter(d => d.parcelasPagas < d.parcelas);
+  for (let i = 0; i < 12; i++) {
+    const chave = somarMeses(chaveMesAtual(), i);
+    let total = 0;
+    dividasAtivas.forEach(d => { const restantes = d.parcelas - d.parcelasPagas; if (i < restantes) total += d.valorParcela; });
+    fundos.forEach(f => {
+      const mesesRestantes = Math.max(1, diferencaMeses(chaveMesAtual(), f.mesVencimento));
+      const restante = Math.max(0, f.valorTotal - (f.valorGuardado || 0));
+      if (restante > 0 && diferencaMeses(chaveMesAtual(), f.mesVencimento) >= i && i <= mesesRestantes - 1) total += restante / mesesRestantes;
+    });
+    meses.push(NOMES_MESES[parseInt(chave.split('-')[1]) - 1].slice(0,3) + '/' + chave.split('-')[0].slice(2));
+    valores.push(Math.round(total));
+  }
+
+  const options = {
+    chart: { type: 'bar', height: 300, background: 'transparent', foreColor: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary'), toolbar: { show: false } },
+    series: [{ name: 'Comprometido', data: valores }],
+    xaxis: { categories: meses },
+    colors: ['#00e5ff'],
+    plotOptions: { bar: { borderRadius: 6, columnWidth: '55%' } },
+    dataLabels: { enabled: false },
+    grid: { borderColor: 'rgba(255,255,255,.06)' },
+    tooltip: { theme: 'dark', y: { formatter: (v) => formatarMoeda(v) } }
+  };
+  if (graficoProjecao) { graficoProjecao.updateOptions(options); }
+  else { graficoProjecao = new ApexCharts(document.querySelector("#graficoProjecao"), options); graficoProjecao.render(); }
+}
+
+/* ==================================================================
+   🗂️ MÉTODO DOS POTES (ENVELOPES / ORÇAMENTO BASE ZERO)
+   ================================================================== */
+function inicializarPotesForm() { document.getElementById('pote-renda').value = potes.renda || ''; renderizarPotesLista(); }
+function salvarRendaPotes() { potes.renda = parseFloat(document.getElementById('pote-renda').value) || 0; salvarPotes(); atualizarPotesUI(); }
+function salvarPotes() { salvar('potes', potes); }
+
+function renderizarPotesLista() {
+  const container = document.getElementById('lista-potes');
+  container.innerHTML = DEFINICAO_POTES.map(p => {
+    const valor = potes[p.chave] || 0;
+    const pct = potes.renda > 0 ? ((valor / potes.renda) * 100).toFixed(0) : 0;
+    return `<div class="pote-card">
+      <div class="pote-topo">
+        <div class="pote-icone" style="background:${p.cor}22; color:${p.cor};"><i class="bi ${p.icone}"></i></div>
+        <div class="flex-fill"><div class="pote-nome">${p.nome}</div><div class="pote-percentual">${pct}% da renda</div></div>
+      </div>
+      <input type="number" class="form-control" value="${valor || ''}" placeholder="0,00" oninput="atualizarValorPote('${p.chave}', this.value)">
+    </div>`;
+  }).join('');
+}
+
+function atualizarValorPote(chave, valor) {
+  potes[chave] = parseFloat(valor) || 0;
+  salvarPotes();
+  atualizarPotesUI();
+}
+
+function atualizarPotesUI() {
+  renderizarPotesLista();
+  const alocado = DEFINICAO_POTES.reduce((s, p) => s + (potes[p.chave] || 0), 0);
+  const sobra = (potes.renda || 0) - alocado;
+  const widget = document.getElementById('widget-sobra-potes');
+
+  if ((potes.renda || 0) === 0) {
+    widget.innerHTML = '<p class="text-secondary mb-0" style="font-size:.85rem;">Informe sua renda mensal para começar a alocar nos potes.</p>';
+  } else if (sobra >= 0) {
+    widget.innerHTML = `<div class="widget-sobra ok"><div><div style="font-size:.72rem; color:var(--text-secondary); text-transform:uppercase;">Dinheiro sem destino</div><div style="font-weight:700; font-size:1.2rem; color:var(--green);">${formatarMoeda(sobra)}</div></div><span style="font-size:.8rem; color:var(--text-secondary);">Dê um destino para esse valor nos potes acima 👆</span></div>`;
+  } else {
+    widget.innerHTML = `<div class="widget-sobra estourado"><div><div style="font-size:.72rem; color:var(--text-secondary); text-transform:uppercase;">Orçamento estourado em</div><div style="font-weight:700; font-size:1.2rem; color:var(--pink);">${formatarMoeda(Math.abs(sobra))}</div></div><span style="font-size:.8rem; color:var(--text-secondary);">Você alocou mais do que sua renda. Reduza algum pote.</span></div>`;
+  }
+
+  renderizarGraficoPotes(alocado);
+}
+
+function renderizarGraficoPotes(alocado) {
+  const el = document.querySelector("#graficoPotes");
+  if (alocado <= 0) { el.innerHTML = '<p class="text-secondary text-center" style="font-size:.85rem;">Aloque valores nos potes para ver o gráfico.</p>'; return; }
+  const series = DEFINICAO_POTES.map(p => potes[p.chave] || 0);
+  const labels = DEFINICAO_POTES.map(p => p.nome);
+  const options = {
+    chart: { type: 'donut', height: 300, background: 'transparent', foreColor: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary') },
+    series, labels,
+    colors: ['#00e5ff', '#00ffab', '#ff2d78', '#a855f7', '#ffb020'],
+    legend: { position: 'bottom' },
+    tooltip: { y: { formatter: (v) => formatarMoeda(v) } },
+    stroke: { colors: [getComputedStyle(document.documentElement).getPropertyValue('--bg-card-solid')] }
+  };
+  if (graficoPotes) { graficoPotes.updateOptions(options); }
+  else { graficoPotes = new ApexCharts(el, options); graficoPotes.render(); }
+}
+
+/* ==================================================================
+   🛟 RESERVA DE EMERGÊNCIA — PAGUE-SE PRIMEIRO
+   ================================================================== */
+function inicializarReservaForm() {
+  document.getElementById('reserva-custo-fixo').value = reserva.custoFixoMensal || '';
+  document.getElementById('reserva-meta-meses').value = reserva.metaMeses || 6;
+}
+function salvarMetaReserva() {
+  reserva.custoFixoMensal = parseFloat(document.getElementById('reserva-custo-fixo').value) || 0;
+  reserva.metaMeses = parseInt(document.getElementById('reserva-meta-meses').value) || 6;
+  salvarReserva(); atualizarReservaUI();
+}
+function salvarReserva() { salvar('reserva', reserva); }
+
+function aportarReserva(valor) { reserva.total = (reserva.total || 0) + valor; salvarReserva(); atualizarReservaUI(); atualizarTudo(); }
+function aportarReservaCustom() {
+  const valor = parseFloat(document.getElementById('reserva-valor-custom').value);
+  if (!valor || valor <= 0) return;
+  aportarReserva(valor);
+  document.getElementById('reserva-valor-custom').value = '';
+}
+function aportarReservaModalCustom() {
+  const valor = parseFloat(document.getElementById('aporte-rapido-custom').value);
+  if (!valor || valor <= 0) return;
+  aportarReserva(valor);
+  document.getElementById('aporte-rapido-custom').value = '';
+  fecharModal('modalAporteRapido');
+}
+function abrirAporteRapidoModal() { new bootstrap.Modal(document.getElementById('modalAporteRapido')).show(); }
+
+function atualizarReservaUI() {
+  const meta = (reserva.custoFixoMensal || 0) * (reserva.metaMeses || 6);
+  const pct = meta > 0 ? Math.min(100, ((reserva.total || 0) / meta) * 100) : 0;
+
+  document.getElementById('reserva-valor-atual').innerText = formatarMoeda(reserva.total || 0);
+  document.getElementById('reserva-meta-texto').innerText = formatarMoeda(meta);
+  document.getElementById('reserva-meses-texto').innerText = `${reserva.metaMeses || 6} meses`;
+  document.getElementById('reserva-barra').style.width = pct + '%';
+  document.getElementById('reserva-percentual').innerText = pct.toFixed(0) + '%';
+
+  [10, 25, 50, 100].forEach(marco => {
+    document.getElementById('marco-' + marco).classList.toggle('atingido', pct >= marco);
+  });
+}
+
+/* ==================================================================
+   📦 FUNDO PREPARADO (SINKING FUNDS)
+   ================================================================== */
+document.getElementById('form-fundo').addEventListener('submit', (e) => {
+  e.preventDefault();
+  fundos.push({
+    id: Date.now(), nome: document.getElementById('f-nome').value,
+    valorTotal: parseFloat(document.getElementById('f-valor').value),
+    mesVencimento: document.getElementById('f-mes-vencimento').value,
+    valorGuardado: 0
+  });
+  salvarFundos();
+  document.getElementById('form-fundo').reset();
+  document.getElementById('f-mes-vencimento').value = somarMeses(chaveMesAtual(), 6);
+  atualizarTudo();
+});
+function salvarFundos(){ salvar('fundos', fundos); }
+function deletarFundo(id){ fundos = fundos.filter(f => f.id !== id); salvarFundos(); atualizarTudo(); }
+function aportarFundo(id) {
+  const fundo = fundos.find(f => f.id === id);
+  if (!fundo) return;
+  const restante = fundo.valorTotal - fundo.valorGuardado;
+  const valor = parseFloat(prompt(`Quanto deseja guardar agora para "${fundo.nome}"? (restam ${formatarMoeda(restante)})`, ''));
+  if (!valor || valor <= 0) return;
+  fundo.valorGuardado = Math.min(fundo.valorTotal, fundo.valorGuardado + valor);
+  salvarFundos(); atualizarTudo();
+}
+
+function atualizarFundosUI() {
+  const container = document.getElementById('lista-fundos');
+  if (fundos.length === 0) { container.innerHTML = '<p class="text-center text-secondary mb-0">Nenhum fundo preparado cadastrado.</p>'; return; }
+
+  container.innerHTML = fundos.map(f => {
+    const mesesRestantes = Math.max(0, diferencaMeses(chaveMesAtual(), f.mesVencimento));
+    const restante = Math.max(0, f.valorTotal - f.valorGuardado);
+    const mensalNecessario = mesesRestantes > 0 ? restante / mesesRestantes : restante;
+    const pct = (f.valorGuardado / f.valorTotal) * 100;
+    const completo = f.valorGuardado >= f.valorTotal;
+
+    return `<div class="fundo-card">
+      <div class="fundo-topo">
+        <div class="fundo-nome">${f.nome}</div>
+        <div class="fundo-prazo">Vencimento: ${nomeMesChave(f.mesVencimento)}</div>
+      </div>
+      <div class="progresso-wrap mb-2"><div class="progresso-fill" style="width:${Math.min(100,pct)}%; background:${completo ? 'var(--grad-green)' : 'var(--grad-purple)'};"></div></div>
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span style="font-size:.85rem; color:var(--text-secondary);">${formatarMoeda(f.valorGuardado)} de ${formatarMoeda(f.valorTotal)}</span>
+        ${completo
+          ? '<span style="color:var(--green);" class="fw-bold"><i class="bi bi-check-all"></i> Meta atingida</span>'
+          : `<span class="fundo-mensal-necessario">Guarde ${formatarMoeda(mensalNecessario)}/mês</span>`}
+      </div>
+      <div class="d-flex gap-2 mt-2">
+        ${!completo ? `<button class="btn btn-sm btn-purple p-1 px-2" onclick="aportarFundo(${f.id})"><i class="bi bi-plus-circle"></i> Guardar Valor</button>` : ''}
+        <button class="btn btn-sm btn-outline-danger p-1 px-2 ms-auto" onclick="deletarFundo(${f.id})"><i class="bi bi-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ==================================================================
+   ✅ CHECK-IN SEMANAL (WIZARD DE 4 PASSOS)
+   ================================================================== */
+function abrirCheckinWizard() {
+  checkinPassoAtual = 1;
+  document.getElementById('ck-entrada').value = '';
+  document.getElementById('ck-saida').value = '';
+  atualizarPassoCheckin();
+  renderizarVencimentosCheckin();
+  renderizarStatusPotesCheckin();
+  new bootstrap.Modal(document.getElementById('modalCheckin')).show();
+}
+function atualizarPassoCheckin() {
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById('ck-passo-' + i).classList.toggle('ativo', i === checkinPassoAtual);
+    document.getElementById('ck-barra-' + i).classList.toggle('ativa', i <= checkinPassoAtual);
+  }
+  document.getElementById('ck-btn-voltar').style.display = checkinPassoAtual > 1 ? 'inline-block' : 'none';
+  document.getElementById('ck-btn-proximo').style.display = checkinPassoAtual < 4 ? 'block' : 'none';
+  document.getElementById('ck-btn-concluir').style.display = checkinPassoAtual === 4 ? 'block' : 'none';
+}
+function checkinProximo() { if (checkinPassoAtual < 4) { checkinPassoAtual++; atualizarPassoCheckin(); } }
+function checkinVoltar() { if (checkinPassoAtual > 1) { checkinPassoAtual--; atualizarPassoCheckin(); } }
+
+function renderizarVencimentosCheckin() {
+  const hoje = new Date(); const em7dias = new Date(); em7dias.setDate(hoje.getDate() + 7);
+  const itens = [];
+
+  dividas.filter(d => d.parcelasPagas < d.parcelas).forEach(d => {
+    const chaveProxima = somarMeses(d.mesInicio, d.parcelasPagas);
+    const [ay, am] = chaveProxima.split('-').map(Number);
+    const dataProximaParcela = new Date(ay, am - 1, 5);
+    if (dataProximaParcela >= hoje && dataProximaParcela <= em7dias) itens.push(`💳 <strong>${d.nome}</strong> — parcela de ${formatarMoeda(d.valorParcela)}`);
+  });
+
+  fundos.forEach(f => {
+    const [y,m] = f.mesVencimento.split('-').map(Number);
+    const dataVenc = new Date(y, m-1, 1);
+    if (dataVenc >= hoje && dataVenc <= em7dias && f.valorGuardado < f.valorTotal) itens.push(`📦 <strong>${f.nome}</strong> — vence este mês, faltam ${formatarMoeda(f.valorTotal - f.valorGuardado)}`);
+  });
+
+  const container = document.getElementById('ck-lista-vencimentos');
+  container.innerHTML = itens.length === 0
+    ? '<p class="text-secondary" style="font-size:.85rem;">🎉 Nenhuma conta programada vence nos próximos 7 dias.</p>'
+    : itens.map(i => `<div class="compromisso-item" style="display:block;">${i}</div>`).join('');
+}
+
+function renderizarStatusPotesCheckin() {
+  const alocado = DEFINICAO_POTES.reduce((s, p) => s + (potes[p.chave] || 0), 0);
+  const sobra = (potes.renda || 0) - alocado;
+  const container = document.getElementById('ck-status-potes');
+  if ((potes.renda || 0) === 0) {
+    container.innerHTML = '<p class="text-secondary" style="font-size:.85rem;">Você ainda não configurou seus potes este mês.</p>';
+  } else if (sobra < 0) {
+    container.innerHTML = `<div class="widget-sobra estourado"><span style="font-size:.85rem;">⚠️ Seu orçamento está estourado em ${formatarMoeda(Math.abs(sobra))}.</span></div>`;
+  } else {
+    container.innerHTML = `<div class="widget-sobra ok"><span style="font-size:.85rem;">✅ Seus potes estão equilibrados. Sobra sem destino: ${formatarMoeda(sobra)}.</span></div>`;
+  }
+}
+
+function concluirCheckin() {
+  const entrada = parseFloat(document.getElementById('ck-entrada').value);
+  const saida = parseFloat(document.getElementById('ck-saida').value);
+  const hojeISO = new Date().toISOString().split('T')[0];
+
+  if (entrada > 0) transacoes.push({ id: Date.now(), tipo: 'ganho', valor: entrada, categoria: 'Salário', data: hojeISO, desc: 'Entrada da semana (Check-in)' });
+  if (saida > 0) transacoes.push({ id: Date.now() + 1, tipo: 'gasto', valor: saida, categoria: 'Outros', data: hojeISO, desc: 'Saída da semana (Check-in)' });
+  if (entrada > 0 || saida > 0) salvarTransacoes();
+
+  checkinUltimo = hojeISO;
+  salvar('checkin_ultimo', checkinUltimo);
+
+  fecharModal('modalCheckin');
+  atualizarTudo();
+  atualizarBadgeCheckin();
+}
+
+function atualizarBadgeCheckin() {
+  const container = document.getElementById('checkin-badge-container');
+  if (!checkinUltimo) {
+    container.innerHTML = `<span class="checkin-badge pendente"><i class="bi bi-exclamation-circle"></i> Você ainda não fez seu check-in semanal <button class="btn btn-sm btn-amber ms-2" onclick="abrirCheckinWizard()">Fazer agora</button></span>`;
+    return;
+  }
+  const diasDesde = Math.floor((new Date() - new Date(checkinUltimo + 'T00:00:00')) / 86400000);
+  if (diasDesde <= 7) {
+    container.innerHTML = `<span class="checkin-badge em-dia"><i class="bi bi-check-circle-fill"></i> Sua saúde financeira está atualizada esta semana!</span>`;
+  } else {
+    container.innerHTML = `<span class="checkin-badge pendente"><i class="bi bi-exclamation-circle"></i> Check-in pendente há ${diasDesde} dias <button class="btn btn-sm btn-amber ms-2" onclick="abrirCheckinWizard()">Fazer agora</button></span>`;
+  }
+}
+
+/* ==================================================================
+   🔐 COFRE SEGURO — CRIAÇÃO DE CONTA, DESBLOQUEIO E MIGRAÇÃO
+   ------------------------------------------------------------------
+   Substitui o antigo "login" (que só comparava um hash em localStorage
+   e não protegia nada de verdade). Agora criar/desbloquear uma conta
+   é o próprio ato de derivar a chave AES que cifra e decifra os dados.
+   ================================================================== */
+const BASES_CONHECIDAS = ['transacoes','dividas','cofre_total','valor_hora','potes','reserva','fundos','checkin_ultimo'];
+
+/* Detecta dados do FinControl 2.0 (localStorage, não criptografado)
+   ainda presentes no navegador, para oferecer migração automática. */
+function existemDadosAntigosNoLocalStorage() {
+  const id = localStorage.getItem('f_usuario_logado') || 'visitante';
+  return BASES_CONHECIDAS.some(base => localStorage.getItem(`dados_${id}_${base}`) !== null);
+}
+async function migrarDadosAntigosParaContaAtual() {
+  const id = localStorage.getItem('f_usuario_logado') || 'visitante';
+  for (const base of BASES_CONHECIDAS) {
+    const bruto = localStorage.getItem(`dados_${id}_${base}`);
+    if (bruto !== null) {
+      try { await salvar(base, JSON.parse(bruto)); } catch (e) { console.error('Falha ao migrar', base, e); }
+    }
+  }
+  BASES_CONHECIDAS.forEach(base => localStorage.removeItem(`dados_${id}_${base}`));
+}
+
+/* Decide qual tela mostrar ao carregar o app: seleção de conta(s)
+   existentes, ou criação da primeira conta (com aviso de migração
+   se houver dados antigos do FinControl 2.0 neste navegador). */
+async function iniciarAppSeguro() {
+  document.getElementById('tela-bloqueio').style.display = 'flex';
+  const contas = await db.contas.toArray();
+  if (contas.length === 0) {
+    document.getElementById('aviso-migracao').style.display = existemDadosAntigosNoLocalStorage() ? 'block' : 'none';
+    mostrarTelaCriarConta(false);
+  } else {
+    mostrarSelecaoContas();
+  }
+}
+
+function mostrarTelaCriarConta(comLinkVoltar = true) {
+  document.getElementById('bloqueio-selecao-contas').style.display = 'none';
+  document.getElementById('form-desbloquear').style.display = 'none';
+  document.getElementById('form-criar-conta').style.display = 'block';
+  document.getElementById('link-ja-tenho-conta').style.display = comLinkVoltar ? 'block' : 'none';
+  document.getElementById('bloqueio-erro').style.display = 'none';
+}
+
+async function mostrarSelecaoContas() {
+  document.getElementById('form-criar-conta').style.display = 'none';
+  document.getElementById('form-desbloquear').style.display = 'none';
+  document.getElementById('bloqueio-erro').style.display = 'none';
+  document.getElementById('bloqueio-selecao-contas').style.display = 'block';
+  const contas = await db.contas.toArray();
+  document.getElementById('lista-contas-bloqueio').innerHTML = contas.map(c =>
+    `<button type="button" class="conta-item-btn" onclick="mostrarTelaDesbloquear('${c.email.replace(/'/g, "\\'")}')"><i class="bi bi-person-circle"></i> <span>${c.nome}<br><small class="text-secondary">${c.email}</small></span></button>`
+  ).join('');
+}
+
+function mostrarTelaDesbloquear(email) {
+  document.getElementById('bloqueio-selecao-contas').style.display = 'none';
+  document.getElementById('form-criar-conta').style.display = 'none';
+  document.getElementById('bloqueio-erro').style.display = 'none';
+  document.getElementById('form-desbloquear').style.display = 'block';
+  document.getElementById('form-desbloquear').dataset.email = email;
+  db.contas.get(email).then(c => { document.getElementById('desbloquear-nome-conta').innerText = c ? c.nome : email; });
+  document.getElementById('desbloquear-senha').value = '';
+  document.getElementById('desbloquear-senha').focus();
+}
+
+function mostrarErroBloqueio(msg) { const el = document.getElementById('bloqueio-erro'); el.innerText = msg; el.style.display = 'block'; }
+
+function inicializarFormularioCriarConta() {
+  document.getElementById('form-criar-conta').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nome = document.getElementById('criar-nome').value.trim();
+    const email = document.getElementById('criar-email').value.trim().toLowerCase();
+    const senha = document.getElementById('criar-senha').value;
+    const senhaConfirma = document.getElementById('criar-senha-confirma').value;
+
+    if (!nome || !email || senha.length < 6) { mostrarErroBloqueio('Preencha nome, e-mail e uma senha mestra com pelo menos 6 caracteres.'); return; }
+    if (senha !== senhaConfirma) { mostrarErroBloqueio('As senhas digitadas não conferem.'); return; }
+    if (await db.contas.get(email)) { mostrarErroBloqueio('Já existe uma conta com este e-mail neste navegador. Escolha-a na tela anterior.'); return; }
+
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    chaveMestraAtual = await derivarChave(senha, salt);
+    contaAtiva = email;
+    const verificacao = await criptografarValor({ marca: 'FINCONTROL_OK' });
+    await db.contas.put({ email, nome, salt: bufferParaBase64(salt), verificacao });
+
+    if (existemDadosAntigosNoLocalStorage()) await migrarDadosAntigosParaContaAtual();
+
+    finalizarDesbloqueio(nome);
+  });
+}
+
+function inicializarFormularioDesbloquear() {
+  document.getElementById('form-desbloquear').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = e.target.dataset.email;
+    const senha = document.getElementById('desbloquear-senha').value;
+    const conta = await db.contas.get(email);
+    if (!conta) { mostrarErroBloqueio('Conta não encontrada.'); return; }
+
+    const salt = base64ParaBuffer(conta.salt);
+    const chaveTentativa = await derivarChave(senha, salt);
+    const chaveAnterior = chaveMestraAtual;
+    chaveMestraAtual = chaveTentativa;
+    try {
+      const resultado = await descriptografarValor(conta.verificacao);
+      if (resultado.marca !== 'FINCONTROL_OK') throw new Error('marca inválida');
+    } catch (erro) {
+      chaveMestraAtual = chaveAnterior;
+      mostrarErroBloqueio('Senha mestra incorreta. Lembre-se: sem ela, não há como recuperar os dados.');
+      return;
+    }
+    contaAtiva = email;
+    finalizarDesbloqueio(conta.nome);
+  });
+}
+
+async function finalizarDesbloqueio(nome) {
+  localStorage.setItem('f_ultima_conta', contaAtiva); // apenas o e-mail, não é sensível — só lembra qual tela mostrar por padrão
+  document.getElementById('conta-ativa-nome').innerText = nome;
+  document.getElementById('tela-bloqueio').style.display = 'none';
+  await carregarTudoDoBanco();
+}
+
+function bloquearApp() {
+  chaveMestraAtual = null;
+  contaAtiva = null;
+  transacoes = []; dividas = []; fundos = [];
+  potes = { renda: 0, fixas: 0, alimentacao: 0, dividas: 0, reserva: 0, lazer: 0 };
+  reserva = { total: 0, metaMeses: 6, custoFixoMensal: 0 };
+  cofreTotal = 0; valorHora = 0; checkinUltimo = null;
+  iniciarAppSeguro();
+}
+
+/* ==================================================================
+   🤖 ROBÔ DE ALERTAS FINANCEIROS
+   ================================================================== */
+function confirmarComRobo(textoHtml, aoConfirmar) {
+  document.getElementById('modalRoboTexto').innerHTML = textoHtml;
+  const modalEl = document.getElementById('modalRoboConfirma');
+  const modal = new bootstrap.Modal(modalEl);
+  const btnConfirmar = document.getElementById('btnRoboConfirmar');
+  const btnCancelar = document.getElementById('btnRoboCancelar');
+  btnConfirmar.replaceWith(btnConfirmar.cloneNode(true));
+  btnCancelar.replaceWith(btnCancelar.cloneNode(true));
+  document.getElementById('btnRoboConfirmar').addEventListener('click', () => { modal.hide(); aoConfirmar(); });
+  document.getElementById('btnRoboCancelar').addEventListener('click', () => modal.hide());
+  modal.show();
+}
+function exibirAlertaRobo(titulo, texto, tipo) {
+  const box = document.getElementById('robo-alerta'); box.className = tipo;
+  document.getElementById('robo-alerta-titulo').innerText = titulo;
+  document.getElementById('robo-alerta-texto').innerText = texto;
+  box.style.display = 'flex';
+}
+function fecharAlertaRobo() { document.getElementById('robo-alerta').style.display = 'none'; }
+function verificarAlertasDeSaldo() {
+  const saldoAtual = calcularSaldoAtual();
+  if (saldoAtual < 0) { exibirAlertaRobo('Saldo negativo', `Seu saldo já está negativo em ${formatarMoeda(Math.abs(saldoAtual))}. Talvez seja hora de rever seus próximos gastos.`, 'critico'); return; }
+  const previsao = calcularPrevisaoPreditiva();
+  if (previsao.positivo === false) { exibirAlertaRobo('Risco de saldo negativo', `No ritmo atual de gastos, seu saldo pode ficar negativo até o fim do mês (projeção: ${formatarMoeda(previsao.saldoProjetado)}).`, 'atencao'); return; }
+  fecharAlertaRobo();
+}
+
+/* ==================================================================
+   🧠 IA — NLP EVOLUÍDO (valor, categoria, data E conta/forma de pagamento)
+   ------------------------------------------------------------------
+   Agora entende frases mais completas, como:
+   "Gastei 150 reais em combustível ontem no cartão de crédito"
+   → valor: 150 | categoria: Transporte | data: ontem | conta: Cartão de Crédito
+   ================================================================== */
+const PALAVRAS_GASTO = ['gastei','paguei','comprei','gasto de','saiu','desembolsei'];
+const PALAVRAS_GANHO = ['recebi','ganhei','entrou','caiu','faturei','vendi'];
+const MAPA_CATEGORIAS = {
+  uber: 'Transporte', '99': 'Transporte', taxi: 'Transporte', gasolina: 'Transporte', combustível: 'Transporte', combustivel: 'Transporte', onibus: 'Transporte', ônibus: 'Transporte', metro: 'Transporte', metrô: 'Transporte', estacionamento: 'Transporte', pedágio: 'Transporte', pedagio: 'Transporte',
+  mercado: 'Alimentação', ifood: 'Alimentação', restaurante: 'Alimentação', lanche: 'Alimentação', supermercado: 'Alimentação', padaria: 'Alimentação', almoço: 'Alimentação', almoco: 'Alimentação', jantar: 'Alimentação',
+  aluguel: 'Moradia', luz: 'Moradia', água: 'Moradia', agua: 'Moradia', internet: 'Moradia', condominio: 'Moradia', condomínio: 'Moradia', 'conta de': 'Moradia',
+  cinema: 'Lazer', show: 'Lazer', viagem: 'Lazer', jogo: 'Lazer', streaming: 'Lazer', festa: 'Lazer',
+  salário: 'Salário', salario: 'Salário', pagamento: 'Salário', freela: 'Salário', freelance: 'Salário', cliente: 'Salário'
+};
+/* Formas de pagamento/conta — checadas da frase MAIS específica para a mais genérica,
+   para "cartão de crédito" não ser capturado por engano como só "cartão". */
+const MAPA_FORMAS_PAGAMENTO = [
+  { termos: ['cartão de crédito','cartao de credito','no crédito','no credito'], conta: 'Cartão de Crédito' },
+  { termos: ['cartão de débito','cartao de debito','no débito','no debito'], conta: 'Cartão de Débito' },
+  { termos: ['pix'], conta: 'Pix' },
+  { termos: ['dinheiro','espécie','especie'], conta: 'Dinheiro' },
+  { termos: ['transferência','transferencia','ted','doc'], conta: 'Transferência' },
+  { termos: ['boleto'], conta: 'Boleto' }
+];
+
+function detectarFormaPagamento(textoLower) {
+  for (const grupo of MAPA_FORMAS_PAGAMENTO) {
+    if (grupo.termos.some(t => textoLower.includes(t))) return grupo.conta;
+  }
+  return null;
+}
+
+function parseLancamentoNLP(textoOriginal) {
+  const texto = textoOriginal.toLowerCase().trim();
+  const matchValor = texto.match(/(\d+(?:[.,]\d{1,2})?)/);
+  if (!matchValor) return null;
+  const valor = parseFloat(matchValor[1].replace(',', '.'));
+  if (isNaN(valor) || valor <= 0) return null;
+
+  let tipo = null;
+  if (PALAVRAS_GASTO.some(p => texto.includes(p))) tipo = 'gasto';
+  if (PALAVRAS_GANHO.some(p => texto.includes(p))) tipo = 'ganho';
+  if (!tipo) return null;
+
+  let categoria = tipo === 'ganho' ? 'Salário' : 'Outros';
+  for (const chave in MAPA_CATEGORIAS) { if (texto.includes(chave)) { categoria = MAPA_CATEGORIAS[chave]; break; } }
+
+  const conta = detectarFormaPagamento(texto);
+
+  let data = new Date();
+  const matchDia = texto.match(/\bdia\s+(\d{1,2})\b/);
+  if (texto.includes('anteontem')) { data.setDate(data.getDate() - 2); }
+  else if (texto.includes('ontem')) { data.setDate(data.getDate() - 1); }
+  else if (matchDia) {
+    const diaAlvo = parseInt(matchDia[1]);
+    if (diaAlvo >= 1 && diaAlvo <= 31) {
+      data.setDate(diaAlvo);
+      if (data > new Date()) data.setMonth(data.getMonth() - 1); // se o dia ainda não chegou neste mês, assume o mês anterior
+    }
+  }
+  const dataISO = data.toISOString().split('T')[0];
+
+  let desc = textoOriginal.replace(/hoje|anteontem|ontem|\bdia\s+\d{1,2}\b/gi, '');
+  MAPA_FORMAS_PAGAMENTO.forEach(g => g.termos.forEach(t => { desc = desc.replace(new RegExp(t, 'gi'), ''); }));
+  desc = desc.replace(/\s{2,}/g, ' ').trim();
+  desc = desc.charAt(0).toUpperCase() + desc.slice(1);
+
+  return { tipo, valor, categoria, desc, data: dataISO, conta };
+}
+
+/*
+async function enviarParaIA(historicoDados, mensagemUsuario) {
+  const resposta = await fetch("https://SEU-BACKEND-SEGURO.com/api/finbot", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ model: "gemini-1.5-pro", contexto: historicoDados, mensagem: mensagemUsuario })
+  });
+  if (!resposta.ok) throw new Error("Falha ao consultar a IA financeira.");
+  const dados = await resposta.json();
+  return dados.textoResposta;
+}
+*/
+
+/* ==================================================================
+   📥 IMPORTADOR DE EXTRATO BANCÁRIO — OFX / CSV
+   ------------------------------------------------------------------
+   Tudo roda 100% local no navegador: o arquivo nunca sai do
+   dispositivo do usuário. Detecta duplicidade contra o que já foi
+   importado antes (por FITID no OFX, ou por um "fingerprint" de
+   data+valor+descrição no CSV) e categoriza automaticamente usando
+   o mesmo dicionário de categorias do assistente por voz/texto.
+   ================================================================== */
+let chavesImportadas = [];              // histórico de identificadores já importados (persistido, criptografado)
+let previewExtratoAtual = [];           // linhas detectadas aguardando confirmação do usuário
+let ultimoTextoArquivoImportado = null; // guardado para reprocessar se o usuário corrigir o mapeamento manual
+
+function fingerprintTransacao(data, valor, desc) {
+  return `${data}|${Math.abs(valor).toFixed(2)}|${(desc || '').toLowerCase().trim().slice(0, 40)}`;
+}
+function categorizarAutomaticamente(descricao, tipo) {
+  const textoLower = (descricao || '').toLowerCase();
+  for (const chave in MAPA_CATEGORIAS) { if (textoLower.includes(chave)) return MAPA_CATEGORIAS[chave]; }
+  return tipo === 'ganho' ? 'Salário' : 'Outros';
+}
+
+/* --- Drag & Drop --- */
+const zonaDrop = document.getElementById('dropzone-extrato');
+['dragenter','dragover'].forEach(evento => zonaDrop.addEventListener(evento, (e) => { e.preventDefault(); zonaDrop.classList.add('arrastando'); }));
+['dragleave','drop'].forEach(evento => zonaDrop.addEventListener(evento, (e) => { e.preventDefault(); zonaDrop.classList.remove('arrastando'); }));
+zonaDrop.addEventListener('drop', (e) => { const arquivo = e.dataTransfer.files[0]; if (arquivo) processarArquivoExtrato(arquivo); });
+
+function processarArquivoExtrato(arquivo) {
+  if (!arquivo) return;
+  const leitor = new FileReader();
+  leitor.onload = (e) => {
+    ultimoTextoArquivoImportado = e.target.result;
+    const nomeMin = arquivo.name.toLowerCase();
+    if (nomeMin.endsWith('.ofx') || ultimoTextoArquivoImportado.includes('<STMTTRN>')) {
+      const linhas = parseOFX(ultimoTextoArquivoImportado);
+      exibirPreviewExtrato(linhas);
+    } else {
+      parseCSVComDeteccaoAutomatica(ultimoTextoArquivoImportado);
+    }
+  };
+  leitor.readAsText(arquivo, 'ISO-8859-1'); // extratos de bancos brasileiros costumam vir em Latin-1
+}
+
+/* --- Parser OFX (SGML simplificado, comum em extratos de bancos BR) --- */
+function parseOFX(texto) {
+  const blocos = texto.match(/<STMTTRN>([\s\S]*?)<\/STMTTRN>/gi) || [];
+  const linhas = [];
+  blocos.forEach(bloco => {
+    const pegar = (tag) => { const m = bloco.match(new RegExp(`<${tag}>([^<\r\n]*)`, 'i')); return m ? m[1].trim() : ''; };
+    const dtPosted = pegar('DTPOSTED');           // formato AAAAMMDD...
+    const trnAmt = parseFloat(pegar('TRNAMT').replace(',', '.'));
+    const fitId = pegar('FITID');
+    const memo = pegar('MEMO') || pegar('NAME') || 'Transação importada';
+    if (!dtPosted || isNaN(trnAmt)) return;
+    const dataISO = `${dtPosted.slice(0,4)}-${dtPosted.slice(4,6)}-${dtPosted.slice(6,8)}`;
+    const tipo = trnAmt < 0 ? 'gasto' : 'ganho';
+    linhas.push({
+      data: dataISO, valor: Math.abs(trnAmt), tipo, desc: memo,
+      categoria: categorizarAutomaticamente(memo, tipo),
+      idUnico: fitId || fingerprintTransacao(dataISO, trnAmt, memo)
+    });
+  });
+  return linhas;
+}
+
+/* --- Parser CSV com autodetecção de delimitador e colunas --- */
+function detectarDelimitador(linhaCabecalho) {
+  const candidatos = [';', ',', '\t'];
+  return candidatos.reduce((melhor, c) => (linhaCabecalho.split(c).length > linhaCabecalho.split(melhor).length ? c : melhor), ';');
+}
+function normalizarTexto(s) { return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+
+function parseCSVComDeteccaoAutomatica(texto) {
+  const linhasBrutas = texto.split(/\r?\n/).filter(l => l.trim() !== '');
+  if (linhasBrutas.length < 2) { alert('Arquivo CSV vazio ou em formato não reconhecido.'); return; }
+  const delimitador = detectarDelimitador(linhasBrutas[0]);
+  const cabecalho = linhasBrutas[0].split(delimitador).map(c => normalizarTexto(c.trim()));
+
+  const idxData = cabecalho.findIndex(c => c.includes('data') || c.includes('date'));
+  const idxDesc = cabecalho.findIndex(c => c.includes('histor') || c.includes('descri') || c.includes('memo') || c.includes('lancamento') || c.includes('name'));
+  const idxValor = cabecalho.findIndex(c => c.includes('valor') || c.includes('amount') || c.includes('montante'));
+
+  if (idxData === -1 || idxDesc === -1 || idxValor === -1) {
+    exibirMapeamentoManual(linhasBrutas, delimitador, cabecalho);
+    return;
+  }
+  const linhas = converterLinhasCSV(linhasBrutas, delimitador, idxData, idxDesc, idxValor);
+  exibirPreviewExtrato(linhas);
+}
+
+function exibirMapeamentoManual(linhasBrutas, delimitador, cabecalho) {
+  document.getElementById('mapeamento-csv').style.display = 'block';
+  document.getElementById('preview-extrato').style.display = 'none';
+  ['map-col-data','map-col-desc','map-col-valor'].forEach((id, i) => {
+    const select = document.getElementById(id);
+    select.innerHTML = cabecalho.map((c, idx) => `<option value="${idx}" ${idx === i ? 'selected' : ''}>${c || 'Coluna ' + (idx+1)}</option>`).join('');
+  });
+  document.getElementById('mapeamento-csv').dataset.linhas = JSON.stringify(linhasBrutas);
+  document.getElementById('mapeamento-csv').dataset.delimitador = delimitador;
+}
+function reprocessarComMapeamentoManual() {
+  const container = document.getElementById('mapeamento-csv');
+  const linhasBrutas = JSON.parse(container.dataset.linhas);
+  const delimitador = container.dataset.delimitador;
+  const idxData = parseInt(document.getElementById('map-col-data').value);
+  const idxDesc = parseInt(document.getElementById('map-col-desc').value);
+  const idxValor = parseInt(document.getElementById('map-col-valor').value);
+  const linhas = converterLinhasCSV(linhasBrutas, delimitador, idxData, idxDesc, idxValor);
+  container.style.display = 'none';
+  exibirPreviewExtrato(linhas);
+}
+
+function converterLinhasCSV(linhasBrutas, delimitador, idxData, idxDesc, idxValor) {
+  const linhas = [];
+  for (let i = 1; i < linhasBrutas.length; i++) {
+    const colunas = linhasBrutas[i].split(delimitador).map(c => c.trim().replace(/^"|"$/g, ''));
+    if (colunas.length <= Math.max(idxData, idxDesc, idxValor)) continue;
+
+    const dataISO = converterDataFlexivel(colunas[idxData]);
+    const valorBruto = colunas[idxValor].replace(/[^\d,.-]/g, '');
+    const valorNum = parseValorBrasileiroOuInternacional(valorBruto);
+    const desc = colunas[idxDesc] || 'Transação importada';
+    if (!dataISO || isNaN(valorNum) || valorNum === 0) continue;
+
+    const tipo = valorNum < 0 ? 'gasto' : 'ganho';
+    linhas.push({
+      data: dataISO, valor: Math.abs(valorNum), tipo, desc,
+      categoria: categorizarAutomaticamente(desc, tipo),
+      idUnico: fingerprintTransacao(dataISO, valorNum, desc)
+    });
+  }
+  return linhas;
+}
+
+function converterDataFlexivel(str) {
+  str = (str || '').trim();
+  let m = str.match(/^(\d{4})-(\d{2})-(\d{2})/);              // AAAA-MM-DD
+  if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+  m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);             // DD/MM/AAAA
+  if (m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+  m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2})$/);            // DD/MM/AA
+  if (m) return `20${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+  return null;
+}
+function parseValorBrasileiroOuInternacional(str) {
+  str = str.trim();
+  if (/,\d{1,2}$/.test(str)) return parseFloat(str.replace(/\./g, '').replace(',', '.')); // 1.234,56
+  return parseFloat(str);                                                                  // 1234.56
+}
+
+/* --- Prévia + confirmação de importação --- */
+function exibirPreviewExtrato(linhas) {
+  document.getElementById('mapeamento-csv').style.display = 'none';
+  if (linhas.length === 0) { alert('Não encontrei nenhuma transação válida neste arquivo.'); return; }
+
+  const fingerprintsExistentes = new Set(transacoes.map(t => fingerprintTransacao(t.data, t.tipo === 'gasto' ? -t.valor : t.valor, t.desc)));
+  previewExtratoAtual = linhas.map(l => ({
+    ...l,
+    duplicata: chavesImportadas.includes(l.idUnico) || fingerprintsExistentes.has(fingerprintTransacao(l.data, l.tipo === 'gasto' ? -l.valor : l.valor, l.desc))
+  }));
+
+  const CATEGORIAS_DISPONIVEIS = ['Salário','Alimentação','Moradia','Transporte','Lazer','Outros'];
+  const corpo = document.getElementById('tabela-preview-extrato');
+  corpo.innerHTML = previewExtratoAtual.map((l, i) => `
+    <tr class="${l.duplicata ? 'linha-duplicata' : ''}">
+      <td><input type="checkbox" class="form-check-input" id="preview-check-${i}" ${l.duplicata ? '' : 'checked'}></td>
+      <td>${l.data.split('-').reverse().join('/')}</td>
+      <td>${l.desc}${l.duplicata ? ' <span class="badge-duplicata">possível duplicata</span>' : ''}</td>
+      <td><select class="form-select form-select-sm" id="preview-cat-${i}">${CATEGORIAS_DISPONIVEIS.map(c => `<option ${c === l.categoria ? 'selected' : ''}>${c}</option>`).join('')}</select></td>
+      <td style="color:${l.tipo === 'ganho' ? 'var(--green)' : 'var(--pink)'};">${formatarMoeda(l.valor)}</td>
+      <td>${l.tipo === 'ganho' ? '🟢 Ganho' : '🔴 Gasto'}</td>
+      <td></td>
+    </tr>`).join('');
+
+  document.getElementById('preview-contagem').innerText = `${previewExtratoAtual.length} transações encontradas`;
+  document.getElementById('preview-extrato').style.display = 'block';
+}
+function marcarTodosPreview(valor) { previewExtratoAtual.forEach((_, i) => { document.getElementById('preview-check-' + i).checked = valor; }); }
+
+function confirmarImportacaoExtrato() {
+  let importadas = 0;
+  previewExtratoAtual.forEach((l, i) => {
+    if (!document.getElementById('preview-check-' + i).checked) return;
+    const categoriaEscolhida = document.getElementById('preview-cat-' + i).value;
+    transacoes.push({ id: Date.now() + i, tipo: l.tipo, valor: l.valor, categoria: categoriaEscolhida, data: l.data, desc: l.desc, conta: 'Extrato Importado' });
+    chavesImportadas.push(l.idUnico);
+    importadas++;
+  });
+  salvarTransacoes();
+  salvar('chaves_importadas', chavesImportadas);
+  cancelarImportacaoExtrato();
+  atualizarTudo();
+  exibirAlertaRobo('Importação concluída', `${importadas} transações importadas do extrato com sucesso.`, 'atencao');
+}
+function cancelarImportacaoExtrato() {
+  previewExtratoAtual = [];
+  document.getElementById('preview-extrato').style.display = 'none';
+  document.getElementById('mapeamento-csv').style.display = 'none';
+  document.getElementById('input-arquivo-extrato').value = '';
+}
+
+function calcularPrevisaoPreditiva() {
+  const hoje = new Date(); const diaAtual = hoje.getDate();
+  const diasNoMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0).getDate();
+  const transacoesDoMes = transacoes.filter(t => { const d = new Date(t.data + 'T00:00:00'); return d.getMonth() === hoje.getMonth() && d.getFullYear() === hoje.getFullYear(); });
+  const ganhosMes = transacoesDoMes.filter(t => t.tipo === 'ganho').reduce((s, t) => s + t.valor, 0);
+  const gastosMes = transacoesDoMes.filter(t => t.tipo === 'gasto').reduce((s, t) => s + t.valor, 0);
+  if (transacoesDoMes.length === 0) return { texto: "Registre alguns lançamentos neste mês para que a IA calcule sua projeção de saldo.", positivo: null };
+
+  const mediaDiariaGasto = gastosMes / diaAtual;
+  const gastoProjetadoMes = mediaDiariaGasto * diasNoMes;
+  const dividasAtivas = dividas.filter(d => d.parcelasPagas < d.parcelas);
+  const compromissosFixos = dividasAtivas.reduce((s, d) => s + d.valorParcela, 0);
+  const saldoProjetado = ganhosMes - gastoProjetadoMes;
+  const trechoCompromissos = compromissosFixos > 0 ? ` Além disso, você já tem ${formatarMoeda(compromissosFixos)}/mês comprometidos em parcelas fixas.` : '';
+
+  const texto = saldoProjetado >= 0
+    ? `📈 Mantendo o ritmo atual de ${formatarMoeda(mediaDiariaGasto)}/dia em gastos, a IA projeta que você fechará o mês com saldo positivo de aproximadamente ${formatarMoeda(saldoProjetado)}.${trechoCompromissos}`
+    : `📉 Alerta: mantendo o ritmo atual de ${formatarMoeda(mediaDiariaGasto)}/dia em gastos, a IA projeta um saldo negativo de aproximadamente ${formatarMoeda(Math.abs(saldoProjetado))} até o fim do mês.${trechoCompromissos}`;
+  return { texto, positivo: saldoProjetado >= 0, saldoProjetado, mediaDiariaGasto };
+}
+function atualizarPainelPreditivo() { document.getElementById('texto-preditivo').innerText = calcularPrevisaoPreditiva().texto; }
+
+function renderizarResumoMensal() {
+  const container = document.getElementById('lista-meses');
+  if (transacoes.length === 0) { container.innerHTML = '<p class="text-center text-secondary mb-0">Nenhum lançamento registrado ainda.</p>'; return; }
+  const porMes = {};
+  transacoes.forEach(t => { const chave = t.data.slice(0, 7); if (!porMes[chave]) porMes[chave] = { ganhos: 0, gastos: 0 }; t.tipo === 'ganho' ? porMes[chave].ganhos += t.valor : porMes[chave].gastos += t.valor; });
+  const chavesOrdenadas = Object.keys(porMes).sort().reverse();
+  container.innerHTML = chavesOrdenadas.map(chave => {
+    const dados = porMes[chave]; const saldoMes = dados.ganhos - dados.gastos;
+    return `<div class="mes-item">
+      <div class="mes-nome">${nomeMesChave(chave)}</div>
+      <div class="mes-valores">
+        <span><b>Salário / Ganhos</b><span style="color:var(--green);">${formatarMoeda(dados.ganhos)}</span></span>
+        <span><b>Gastos</b><span style="color:var(--pink);">${formatarMoeda(dados.gastos)}</span></span>
+        <span><b>Saldo do mês</b><span style="color:${saldoMes < 0 ? 'var(--pink)' : 'var(--cyan)'};">${formatarMoeda(saldoMes)}</span></span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderizarCompromissosFixos() {
+  const container = document.getElementById('lista-compromissos'); const totalBox = document.getElementById('total-compromissos-box');
+  const dividasAtivas = dividas.filter(d => d.parcelasPagas < d.parcelas);
+  const fundosAtivos = fundos.filter(f => f.valorGuardado < f.valorTotal);
+  if (dividasAtivas.length === 0 && fundosAtivos.length === 0) { container.innerHTML = '<p class="text-center text-secondary mb-0">Nenhum compromisso fixo cadastrado.</p>'; totalBox.style.display = 'none'; return; }
+
+  let html = dividasAtivas.map(d => {
+    const restantes = d.parcelas - d.parcelasPagas;
+    return `<div class="compromisso-item"><div><div class="nome">💳 ${d.nome}</div><div class="meses-restantes">Faltam ${restantes} ${restantes === 1 ? 'mês' : 'meses'}</div></div><div class="valor">${formatarMoeda(d.valorParcela)}/mês</div></div>`;
+  }).join('');
+
+  html += fundosAtivos.map(f => {
+    const mesesRestantes = Math.max(1, diferencaMeses(chaveMesAtual(), f.mesVencimento));
+    const mensal = Math.max(0, f.valorTotal - f.valorGuardado) / mesesRestantes;
+    return `<div class="compromisso-item"><div><div class="nome">📦 ${f.nome}</div><div class="meses-restantes">Vence em ${nomeMesChave(f.mesVencimento)}</div></div><div class="valor">${formatarMoeda(mensal)}/mês</div></div>`;
+  }).join('');
+
+  container.innerHTML = html;
+  const totalMensal = dividasAtivas.reduce((s, d) => s + d.valorParcela, 0) + fundosAtivos.reduce((s, f) => { const mr = Math.max(1, diferencaMeses(chaveMesAtual(), f.mesVencimento)); return s + Math.max(0, f.valorTotal - f.valorGuardado) / mr; }, 0);
+  const renda = calcularRendaMediaMensal(); const percentual = renda > 0 ? (totalMensal / renda) * 100 : null;
+  totalBox.style.display = 'flex';
+  totalBox.innerHTML = `<div><div style="font-size:.7rem; color:var(--text-secondary); text-transform:uppercase;">Total já comprometido por mês</div><div style="font-family:'JetBrains Mono', monospace; font-weight:700; font-size:1.05rem; color:var(--pink);">${formatarMoeda(totalMensal)}</div></div>${percentual !== null ? `<div style="text-align:right; font-size:.78rem; color:var(--text-secondary);">≈ ${percentual.toFixed(0)}% da sua renda média mensal</div>` : ''}`;
+}
+
+function enviarChat(msg) {
+  const caixa = document.getElementById('caixa-chat');
+  const bUser = document.createElement('div'); bUser.className = 'balao user'; bUser.innerText = msg; caixa.appendChild(bUser); caixa.scrollTop = caixa.scrollHeight;
+
+  setTimeout(() => {
+    const bIA = document.createElement('div'); bIA.className = 'balao ia';
+    const lancamento = parseLancamentoNLP(msg);
+    if (lancamento) {
+      transacoes.push({ id: Date.now(), tipo: lancamento.tipo, valor: lancamento.valor, categoria: lancamento.categoria, data: lancamento.data, desc: lancamento.desc, conta: lancamento.conta });
+      salvarTransacoes(); atualizarTudo();
+      bIA.innerText = `✅ Lançamento registrado automaticamente pela IA:\n\n• Tipo: ${lancamento.tipo === 'ganho' ? 'Ganho' : 'Gasto'}\n• Valor: ${formatarMoeda(lancamento.valor)}\n• Categoria: ${lancamento.categoria}${lancamento.conta ? `\n• Conta: ${lancamento.conta}` : ''}\n• Data: ${lancamento.data.split('-').reverse().join('/')}\n\nJá atualizei sua tabela e seu resumo geral.`;
+      caixa.appendChild(bIA); caixa.scrollTop = caixa.scrollHeight; return;
+    }
+    let tGanhos = 0, tGastos = 0; transacoes.forEach(t => { t.tipo === 'ganho' ? tGanhos += t.valor : tGastos += t.valor; });
+    let saldoAtual = tGanhos - tGastos; const msgLower = msg.toLowerCase();
+    if (msgLower.includes('previsão') || msgLower.includes('previsao') || msgLower.includes('mês') || msgLower.includes('mes')) {
+      bIA.classList.add('preditiva'); bIA.innerText = `🔮 ${calcularPrevisaoPreditiva().texto}`;
+    } else if (msgLower.includes('análise') || msgLower.includes('analise') || msgLower.includes('saldo') || msgLower.includes('painel')) {
+      bIA.innerText = `🤖 Análise do seu painel:\n\n• Ganhos Totais: ${formatarMoeda(tGanhos)}\n• Gastos Totais: ${formatarMoeda(tGastos)}\n• Saldo Livre: ${formatarMoeda(saldoAtual, true)}\n\n${saldoAtual < 0 ? '⚠️ Atenção: o seu saldo atual está negativo.' : '✅ Excelente! O seu saldo está positivo.'}`;
+    } else if (msgLower.includes('economizar') || msgLower.includes('dica')) {
+      bIA.innerText = `🤖 Dicas rápidas de economia:\n\n1. Use os Potes para dar destino a cada real da sua renda.\n2. Separe sempre uma parte para a Reserva de Emergência assim que o salário cair.\n3. Cadastre gastos sazonais (IPVA, IPTU) no Fundo Preparado para não levar susto.`;
+    } else {
+      bIA.innerText = `🤖 Entendido. Seu saldo livre atual em conta é de ${formatarMoeda(saldoAtual, true)}. Você também pode me dizer algo como "gastei 30 reais com ifood hoje" que eu registro automaticamente.`;
+    }
+    caixa.appendChild(bIA); caixa.scrollTop = caixa.scrollHeight;
+  }, 500);
+}
+function processarChatInput() { const input = document.getElementById('input-chat'); if (input.value.trim() !== "") { enviarChat(input.value); input.value = ""; } }
+
+/* ==================================================================
+   🎙️ RECONHECIMENTO DE VOZ
+   ================================================================== */
+function configurarReconhecimentoVoz() {
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition(); recognition.lang = 'pt-BR'; recognition.interimResults = false;
+    recognition.onstart = () => { gravando = true; document.getElementById('btn-microfone').classList.add('gravando'); };
+    recognition.onend = () => { gravando = false; document.getElementById('btn-microfone').classList.remove('gravando'); };
+    recognition.onresult = (event) => { document.getElementById('input-chat').value = event.results[0][0].transcript; };
+  }
+}
+function alternarVoz() { if (!recognition) { alert("O reconhecimento de voz não é suportado no seu navegador."); return; } gravando ? recognition.stop() : recognition.start(); }
+
+/* ==================================================================
+   RENDERIZAÇÃO GERAL DA TELA
+   ================================================================== */
+function atualizarTudo() {
+  const tBody = document.getElementById('tabela-transacoes');
+  tBody.innerHTML = transacoes.length === 0 ? '<tr><td colspan="7" class="text-center text-secondary">Nenhum ganho ou gasto registrado ainda.</td></tr>' : '';
+  transacoes.slice().reverse().forEach(t => {
+    tBody.innerHTML += `<tr>
+      <td><span class="badge" style="background:${t.tipo === 'ganho' ? 'rgba(0,255,171,.15)' : 'rgba(255,45,120,.15)'}; color:${t.tipo === 'ganho' ? 'var(--green)' : 'var(--pink)'}; border:1px solid ${t.tipo === 'ganho' ? 'var(--green)' : 'var(--pink)'};">${t.tipo.toUpperCase()}</span></td>
+      <td class="fw-medium">${t.desc}</td><td>${t.categoria}</td><td><span class="text-secondary" style="font-size:.8rem;">${t.conta || '—'}</span></td><td>${t.data.split('-').reverse().join('/')}</td>
+      <td class="fw-bold" style="color:${t.tipo === 'ganho' ? 'var(--green)' : 'var(--pink)'};">${formatarMoeda(t.valor)}</td>
+      <td><button class="btn btn-sm btn-outline-danger p-1" onclick="deletarTransacao(${t.id})"><i class="bi bi-trash"></i></button></td>
+    </tr>`;
+  });
+
+  renderizarDividas();
+
+  let ganhos = 0, gastos = 0; transacoes.forEach(t => { t.tipo === 'ganho' ? ganhos += t.valor : gastos += t.valor; });
+  let saldo = ganhos - gastos;
+  document.getElementById('resumo-ganhos').innerText = formatarMoeda(ganhos);
+  document.getElementById('resumo-gastos').innerText = formatarMoeda(gastos);
+  document.getElementById('resumo-saldo').innerText = formatarMoeda(saldo, true);
+  document.getElementById('resumo-saldo').style.color = saldo < 0 ? "var(--pink)" : "var(--cyan)";
+  document.getElementById('cofre-total').innerText = formatarMoeda(cofreTotal);
+  if (cofreTotal > 0) document.getElementById('conquista-1').classList.remove('bloqueada');
+
+  atualizarPainelPreditivo();
+  renderizarScoreSaude();
+  renderizarResumoMensal();
+  renderizarCompromissosFixos();
+  renderizarGrafico();
+  renderizarGraficoProjecao();
+  atualizarPotesUI();
+  atualizarReservaUI();
+  atualizarFundosUI();
+  verificarAlertasDeSaldo();
+}
+
+function renderizarGrafico() {
+  let cats = { Alimentação: 0, Moradia: 0, Transporte: 0, Lazer: 0, Outros: 0 };
+  transacoes.forEach(t => { if (t.tipo === 'gasto' && cats[t.categoria] !== undefined) cats[t.categoria] += t.valor; });
+  const labels = Object.keys(cats); const dados = Object.values(cats);
+  const options = {
+    chart: { type: 'donut', height: 340, background: 'transparent', foreColor: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary') },
+    series: dados, labels: labels,
+    colors: ['#00e5ff', '#ff2d78', '#ffb020', '#a855f7', '#00ffab'],
+    fill: { type: 'gradient', gradient: { shade: 'dark', type: 'diagonal1', shadeIntensity: 0.5, gradientToColors: ['#0072ff', '#c400ff', '#ff7a00', '#6d28d9', '#00b46e'], opacityFrom: 0.95, opacityTo: 0.75 } },
+    stroke: { colors: [getComputedStyle(document.documentElement).getPropertyValue('--bg-card-solid')], width: 3 },
+    legend: { position: 'bottom', markers: { radius: 4 } },
+    dataLabels: { style: { colors: ['#04101a'], fontWeight: 700 } },
+    tooltip: { theme: 'dark', y: { formatter: (val) => formatarMoeda(val) } },
+    plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'Total Gasto', color: '#7d8db3', formatter: (w) => formatarMoeda(w.globals.seriesTotals.reduce((a,b)=>a+b,0)) } } } } }
+  };
+  if (graficoApex) { graficoApex.updateOptions(options); } else { graficoApex = new ApexCharts(document.querySelector("#graficoApex"), options); graficoApex.render(); }
+}
+
+/* ==================================================================
+   VALOR DO TEMPO / IMPULSO DE COMPRA
+   ================================================================== */
+document.getElementById('form-valor-hora').addEventListener('submit', (e) => {
+  e.preventDefault();
+  valorHora = parseFloat(document.getElementById('h-salario').value) / parseFloat(document.getElementById('h-horas').value);
+  salvar('valor_hora', valorHora);
+  document.getElementById('resultado-valor-hora').innerHTML = `<span style="color:var(--green);" class="fw-bold">A sua hora de trabalho vale: ${formatarMoeda(valorHora)}</span>`;
+});
+function calcularCustoEmHoras() {
+  const preco = parseFloat(document.getElementById('p-preco').value);
+  if (valorHora <= 0) { alert('Configure a sua hora primeiro no Passo 1.'); return; }
+  document.getElementById('resultado-custo-produto').innerHTML = `<div class="alert" style="background:rgba(0,229,255,.08); border:1px solid var(--cyan); color:var(--text-primary);">Isto equivale a <strong>${(preco / valorHora).toFixed(1)} horas</strong> reais de esforço do seu trabalho.</div>`;
+}
+
+/* ==================================================================
+   COFRE
+   ================================================================== */
+document.getElementById('form-gasto-evitado').addEventListener('submit', (e) => {
+  e.preventDefault();
+  cofreTotal += parseFloat(document.getElementById('c-valor').value);
+  salvar('cofre_total', cofreTotal);
+  document.getElementById('form-gasto-evitado').reset();
+  atualizarTudo();
+});
+async function limparBanco() {
+  if (!contaAtiva) return;
+  if (!confirm("Deseja mesmo apagar TODOS os seus dados financeiros desta conta (transações, dívidas, potes, reserva, fundos, cofre)? Isso não afeta outras contas cadastradas neste navegador nem exclui a conta em si.")) return;
+  await db.cofre.where('conta').equals(contaAtiva).delete();
+  location.reload();
+}
+
+/* ==================================================================
+   EFEITO DE PARTÍCULAS DIGITAIS NO BACKGROUND
+   ================================================================== */
+function iniciarParticulas() {
+  const canvas = document.getElementById('particulas'); const ctx = canvas.getContext('2d');
+  let w, h, particulas = [];
+  function redimensionar() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+  redimensionar(); window.addEventListener('resize', redimensionar);
+  const cores = ['rgba(0,229,255,', 'rgba(255,45,120,', 'rgba(168,85,247,'];
+  for (let i = 0; i < 45; i++) { particulas.push({ x: Math.random()*w, y: Math.random()*h, vx:(Math.random()-0.5)*0.22, vy:(Math.random()-0.5)*0.22, r: Math.random()*1.5+0.4, cor: cores[Math.floor(Math.random()*cores.length)], op: Math.random()*0.4+0.12 }); }
+  function animar() {
+    ctx.clearRect(0,0,w,h);
+    particulas.forEach(p => { p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>w) p.vx*=-1; if(p.y<0||p.y>h) p.vy*=-1; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle = p.cor+p.op+')'; ctx.fill(); });
+    requestAnimationFrame(animar);
+  }
+  animar();
+}
+</script>
+</body>
+</html>
